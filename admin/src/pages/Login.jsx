@@ -18,7 +18,10 @@ export default function Login() {
       await login(email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError("Invalid email or password.");
+      // Temporary: surface the real Firebase error code while debugging login
+      // issues — swap back to a generic "Invalid email or password." message
+      // before showing this to real end users.
+      setError(`${err.code || "unknown-error"}: ${err.message || String(err)}`);
     } finally {
       setLoading(false);
     }
