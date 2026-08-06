@@ -1,0 +1,71 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Admin panel users authenticate with Firebase email/password and get a
+    // doc at admins/{uid} (create manually in console, or via a setup script)
+    // — that doc's existence is the only thing that grants elevated access.
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // --- Admin accounts (self-managed; never client-writable) ---
+    match /admins/{adminId} {
+      allow read: if isSignedIn() && request.auth.uid == adminId;
+      allow write: if false;
+    }
+
+    // --- Farmers ---
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+    }
+
+    // --- Sellers ---
+    match /sellers/{sellerId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() || (isSignedIn() && request.auth.uid == sellerId);
+    }
+
+    // --- Products ---
+    match /products/{productId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin() || (isSignedIn() && request.resource.data.sellerId == request.auth.uid);
+      allow update, delete: if isAdmin() || (isSignedIn() && resource.data.sellerId == request.auth.uid);
+    }
+
+    // --- Orders ---
+    match /orders/{orderId} {
+      allow read: if isAdmin() ||
+        (isSignedIn() && (resource.data.farmerId == request.auth.uid || resource.data.sellerId == request.auth.uid));
+      allow create: if isAdmin() || (isSignedIn() && request.resource.data.farmerId == request.auth.uid);
+      allow update: if isAdmin() ||
+        (isSignedIn() && (resource.data.farmerId == request.auth.uid || resource.data.sellerId == request.auth.uid));
+    }
+
+    // --- Settlements (written only by Cloud Functions via Admin SDK) ---
+    match /settlements/{settlementId} {
+      allow read: if isAdmin() || (isSignedIn() && resource.data.sellerId == request.auth.uid);
+      allow write: if false;
+    }
+
+    // --- Order ID counters ---
+    // Any signed-in user may bump the sequence via the transaction in
+    // placeOrder() (src/services/firebase/firestore.js). The counter only
+    // controls the human-readable ULM-YYYY-NNNNN suffix, so it carries no
+    // sensitive data and worst case a bad actor skips a number.
+    match /counters/{counterId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // --- Referral credit ledger (internal, Admin SDK only) ---
+    match /referralCredits/{creditId} {
+      allow read, write: if false;
+    }
+  }
+}

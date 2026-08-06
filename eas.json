@@ -1,0 +1,33 @@
+{
+  "cli": {
+    "version": ">= 12.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": { "gradleCommand": ":app:assembleDebug" }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": { "buildType": "apk" }
+    },
+    "production": {
+      "android": { "buildType": "app-bundle" },
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "@ulume_firebase_api_key",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "@ulume_firebase_project_id",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "@ulume_firebase_app_id",
+        "EXPO_PUBLIC_GOOGLE_SPEECH_KEY": "@ulume_google_speech_key",
+        "EXPO_PUBLIC_GOOGLE_TTS_KEY": "@ulume_google_tts_key",
+        "EXPO_PUBLIC_GOOGLE_MAPS_KEY": "@ulume_google_maps_key",
+        "EXPO_PUBLIC_GOOGLE_TRANSLATE_KEY": "@ulume_google_translate_key",
+        "EXPO_PUBLIC_WHATSAPP_PHONE_ID": "@ulume_whatsapp_phone_id"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
