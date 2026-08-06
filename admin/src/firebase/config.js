@@ -11,6 +11,12 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+// Temporary diagnostic — remove once the "auth/api-key-not-valid" issue is
+// resolved. Logs the exact config the running app parsed from .env so we can
+// spot a stray character, missing value, etc.
+console.log("[ULUME DEBUG] firebaseConfig:", JSON.stringify(firebaseConfig));
+console.log("[ULUME DEBUG] apiKey length:", firebaseConfig.apiKey?.length);
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
