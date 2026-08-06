@@ -10,10 +10,27 @@
       "runtime": "nodejs18"
     }
   ],
+  "hosting": {
+    "public": "admin/dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [{ "key": "Cache-Control", "value": "max-age=31536000" }]
+      }
+    ]
+  },
   "emulators": {
     "functions": { "port": 5001 },
     "firestore": { "port": 8080 },
     "auth": { "port": 9099 },
+    "hosting": { "port": 5000 },
     "ui": { "enabled": true }
   }
 }

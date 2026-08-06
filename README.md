@@ -100,7 +100,44 @@ Firestore security rules (`firestore.rules`) check for that `admins/{uid}` docum
 granting cross-account read/write access — without it, an admin-panel login only has the
 same permissions as a regular signed-in user.
 
-## 5. Building the Android APK
+## 5. Deploying the admin panel to Firebase Hosting
+
+The admin panel deploys as a static site to Firebase Hosting (separate from the mobile
+app, which is a native Android APK and isn't hosted).
+
+```bash
+npm install -g firebase-tools   # if you don't already have it
+firebase login
+```
+
+Set your project ID in `.firebaserc` (replace the placeholder with the real project ID,
+found in Firebase Console → Project settings → General, or via `firebase projects:list` —
+note this is the string project ID, not the numeric project number):
+
+```json
+{ "projects": { "default": "your-actual-project-id" } }
+```
+
+Make sure `admin/.env` is filled in (see step 4) — the build embeds those values into the
+static bundle. Then build and deploy:
+
+```bash
+npm run deploy:admin
+```
+
+This runs `admin`'s Vite build (output to `admin/dist`) and deploys it via the `hosting`
+block in `firebase.json`. Your admin panel will be live at `https://<project-id>.web.app`.
+
+To also deploy Firestore rules/indexes and Cloud Functions in one pass:
+
+```bash
+firebase deploy --only hosting,firestore:rules,firestore:indexes,functions
+```
+
+Local preview before deploying: `firebase emulators:start --only hosting` (serves the
+`admin/dist` build on `http://localhost:5000`).
+
+## 6. Building the Android APK
 
 ```bash
 eas login
@@ -126,7 +163,7 @@ src/            Mobile app source (screens, components, navigation, stores, serv
 functions/      Firebase Cloud Functions (order lifecycle, weekly settlement, WhatsApp)
 admin/          React + Vite + Tailwind admin panel
 scripts/        Firestore seed script
-firestore.rules / firestore.indexes.json / firebase.json   Firebase project config
+firestore.rules / firestore.indexes.json / firebase.json / .firebaserc   Firebase project config
 eas.json        EAS Build profiles
 ```
 
