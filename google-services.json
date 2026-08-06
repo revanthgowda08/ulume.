@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "196018320306",
+    "project_id": "ulumeprod",
+    "storage_bucket": "ulumeprod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196018320306:android:fea29dc2c92b534c17eaab",
+        "android_client_info": {
+          "package_name": "com.ulume.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdAaNNERafyyVpFtK4MWxLcljCZYFiP98"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
