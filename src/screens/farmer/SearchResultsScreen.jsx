@@ -6,10 +6,12 @@ import { spacing } from "../../theme/spacing";
 import ProductCard from "../../components/ProductCard";
 import { useAppStore } from "../../store/appStore";
 import { getNearbyProducts } from "../../utils/geoUtils";
+import { useT } from "../../i18n/useT";
 
 export default function SearchResultsScreen({ route, navigation }) {
   const { products: initialProducts, query } = route.params || {};
   const location = useAppStore((s) => s.location);
+  const t = useT();
   const [products, setProducts] = useState(initialProducts || []);
   const [loading, setLoading] = useState(!initialProducts);
 
@@ -37,7 +39,7 @@ export default function SearchResultsScreen({ route, navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>ಫಲಿತಾಂಶಗಳು ({products.length})</Text>
+        <Text style={styles.title}>{t("ಫಲಿತಾಂಶಗಳು")} ({products.length})</Text>
       </View>
       <FlatList
         data={products}
@@ -50,7 +52,7 @@ export default function SearchResultsScreen({ route, navigation }) {
           !loading && (
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>🔍</Text>
-              <Text style={styles.emptyText}>ಏನೂ ಸಿಗಲಿಲ್ಲ. ಬೇರೆ ಪದ ಪ್ರಯತ್ನಿಸಿ.</Text>
+              <Text style={styles.emptyText}>{t("ಏನೂ ಸಿಗಲಿಲ್ಲ. ಬೇರೆ ಪದ ಪ್ರಯತ್ನಿಸಿ.")}</Text>
             </View>
           )
         }

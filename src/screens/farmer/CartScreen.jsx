@@ -7,10 +7,12 @@ import { spacing } from "../../theme/spacing";
 import { formatRupees, calculateDeliveryCharge } from "../../utils/formatters";
 import { useCartStore } from "../../store/cartStore";
 import { useAuthStore } from "../../store/authStore";
+import { useT } from "../../i18n/useT";
 
 export default function CartScreen({ navigation }) {
   const { items, updateQty, removeItem, getTotal } = useCartStore();
   const user = useAuthStore((s) => s.user);
+  const t = useT();
 
   const subtotal = getTotal();
   const isFirstOrder = (user?.totalOrders || 0) === 0;
@@ -29,13 +31,13 @@ export default function CartScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>ಕಾರ್ಟ್</Text>
+        <Text style={styles.title}>{t("ಕಾರ್ಟ್")}</Text>
       </View>
 
       {items.length === 0 ? (
         <View style={styles.empty}>
           <Text style={styles.emptyIcon}>🛒</Text>
-          <Text style={styles.emptyText}>ನಿಮ್ಮ ಕಾರ್ಟ್ ಖಾಲಿ ಇದೆ</Text>
+          <Text style={styles.emptyText}>{t("ನಿಮ್ಮ ಕಾರ್ಟ್ ಖಾಲಿ ಇದೆ")}</Text>
         </View>
       ) : (
         <>
@@ -67,19 +69,19 @@ export default function CartScreen({ navigation }) {
 
           <View style={styles.summary}>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>ಉಪಮೊತ್ತ</Text>
+              <Text style={styles.summaryLabel}>{t("ಉಪಮೊತ್ತ")}</Text>
               <Text style={styles.summaryValue}>{formatRupees(subtotal)}</Text>
             </View>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>ಡೆಲಿವರಿ ಶುಲ್ಕ</Text>
-              <Text style={styles.summaryValue}>{deliveryCharge === 0 ? "ಉಚಿತ" : formatRupees(deliveryCharge)}</Text>
+              <Text style={styles.summaryLabel}>{t("ಡೆಲಿವರಿ ಶುಲ್ಕ")}</Text>
+              <Text style={styles.summaryValue}>{deliveryCharge === 0 ? t("ಉಚಿತ") : formatRupees(deliveryCharge)}</Text>
             </View>
             <View style={[styles.summaryRow, styles.totalRow]}>
-              <Text style={styles.totalLabel}>ಒಟ್ಟು</Text>
+              <Text style={styles.totalLabel}>{t("ಒಟ್ಟು")}</Text>
               <Text style={styles.totalValue}>{formatRupees(total)}</Text>
             </View>
             <View style={styles.codInfo}>
-              <Text style={styles.codInfoText}>💰 ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ ಕೊಡಿ — ಮುಂಗಡ ಪಾವತಿ ಬೇಡ</Text>
+              <Text style={styles.codInfoText}>💰 {t("ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ ಕೊಡಿ — ಮುಂಗಡ ಪಾವತಿ ಬೇಡ")}</Text>
             </View>
             <TouchableOpacity style={styles.checkoutBtn} onPress={() => navigation.navigate("Checkout")}>
               <Text style={styles.checkoutBtnText}>Checkout →</Text>

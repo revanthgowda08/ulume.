@@ -5,11 +5,13 @@ import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { listenToOrder, updateOrderStatus } from "../../services/firebase/firestore";
 import { formatRupees, formatOrderDate } from "../../utils/formatters";
+import { useT } from "../../i18n/useT";
 
 export default function SellerOrderDetailScreen({ route, navigation }) {
   const { orderId } = route.params;
   const [order, setOrder] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const t = useT();
 
   useEffect(() => {
     const unsubscribe = listenToOrder(orderId, setOrder);
@@ -33,7 +35,7 @@ export default function SellerOrderDetailScreen({ route, navigation }) {
     try {
       await updateOrderStatus(orderId, status, "seller");
     } catch (e) {
-      Alert.alert("ದೋಷ", "ಅಪ್‌ಡೇಟ್ ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.");
+      Alert.alert(t("ದೋಷ"), t("ಅಪ್‌ಡೇಟ್ ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
     } finally {
       setUpdating(false);
     }
@@ -52,7 +54,7 @@ export default function SellerOrderDetailScreen({ route, navigation }) {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>ರೈತ ವಿವರ</Text>
+        <Text style={styles.cardTitle}>{t("ರೈತ ವಿವರ")}</Text>
         <Text style={styles.row}>{order.farmerName || "—"}</Text>
         <TouchableOpacity onPress={() => Linking.openURL(`tel:${order.farmerPhone}`)}>
           <Text style={styles.phoneLink}>📞 {order.farmerPhone}</Text>
@@ -61,7 +63,7 @@ export default function SellerOrderDetailScreen({ route, navigation }) {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>ಐಟಂಗಳು</Text>
+        <Text style={styles.cardTitle}>{t("ಐಟಂಗಳು")}</Text>
         {order.items?.map((item, i) => (
           <View key={i} style={styles.itemRow}>
             <Text style={styles.itemName}>{item.productNameKannada || item.productName} × {item.quantity}</Text>
@@ -71,7 +73,7 @@ export default function SellerOrderDetailScreen({ route, navigation }) {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>ಆದಾಯ ವಿವರ</Text>
+        <Text style={styles.cardTitle}>{t("ಆದಾಯ ವಿವರ")}</Text>
         <Text style={styles.commissionText}>
           Gross {formatRupees(grossAmount)} — Commission {formatRupees(commissionAmount)} ({((order.commissionRate || 0.065) * 100).toFixed(1)}%) = Your earnings {formatRupees(earnings)}
         </Text>

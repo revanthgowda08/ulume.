@@ -5,13 +5,17 @@ import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import OrderStatusBar from "../../components/OrderStatusBar";
 import { listenToOrder } from "../../services/firebase/firestore";
-import { formatRupees, formatOrderDate, ORDER_STATUS_LABELS_KN } from "../../utils/formatters";
+import { formatRupees, formatOrderDate, getOrderStatusLabel } from "../../utils/formatters";
+import { useAppStore } from "../../store/appStore";
+import { useT } from "../../i18n/useT";
 
 const RETURN_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 export default function OrderTrackingScreen({ route, navigation }) {
   const { orderId } = route.params;
   const [order, setOrder] = useState(null);
+  const language = useAppStore((s) => s.language);
+  const t = useT();
 
   useEffect(() => {
     const unsubscribe = listenToOrder(orderId, setOrder);
@@ -43,13 +47,13 @@ export default function OrderTrackingScreen({ route, navigation }) {
 
       <OrderStatusBar status={order.status} />
 
-      <Text style={styles.statusLabel}>{ORDER_STATUS_LABELS_KN[order.status] || order.status}</Text>
+      <Text style={styles.statusLabel}>{getOrderStatusLabel(order.status, language)}</Text>
       {order.estimatedDelivery && (
-        <Text style={styles.eta}>ಅಂದಾಜು ಡೆಲಿವರಿ: {order.estimatedDelivery}</Text>
+        <Text style={styles.eta}>{t("ಅಂದಾಜು ಡೆಲಿವರಿ")}: {order.estimatedDelivery}</Text>
       )}
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>ಆರ್ಡರ್ ವಿವರ</Text>
+        <Text style={styles.cardTitle}>{t("ಆರ್ಡರ್ ವಿವರ")}</Text>
         {order.items?.map((item, i) => (
           <View key={i} style={styles.itemRow}>
             <Text style={styles.itemName}>{item.productNameKannada || item.productName} × {item.quantity}</Text>
@@ -57,23 +61,23 @@ export default function OrderTrackingScreen({ route, navigation }) {
           </View>
         ))}
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>ಒಟ್ಟು</Text>
+          <Text style={styles.totalLabel}>{t("ಒಟ್ಟು")}</Text>
           <Text style={styles.totalValue}>{formatRupees(order.total)}</Text>
         </View>
       </View>
 
       {order.sellerPhone && (
         <TouchableOpacity style={styles.callBtn} onPress={() => Linking.openURL(`tel:${order.sellerPhone}`)}>
-          <Text style={styles.callBtnText}>📞 ಮಾರಾಟಗಾರರಿಗೆ ಕರೆ ಮಾಡಿ</Text>
+          <Text style={styles.callBtnText}>📞 {t("ಮಾರಾಟಗಾರರಿಗೆ ಕರೆ ಮಾಡಿ")}</Text>
         </TouchableOpacity>
       )}
 
       {canReturn && (
         <TouchableOpacity
           style={styles.returnBtn}
-          onPress={() => Alert.alert("ವಾಪಸ್ ವಿನಂತಿ", "ನಿಮ್ಮ ವಿನಂತಿ ಸ್ವೀಕರಿಸಲಾಗಿದೆ. ನಾವು ಶೀಘ್ರದಲ್ಲಿ ಸಂಪರ್ಕಿಸುತ್ತೇವೆ.")}
+          onPress={() => Alert.alert(t("ವಾಪಸ್ ವಿನಂತಿ"), t("ನಿಮ್ಮ ವಿನಂತಿ ಸ್ವೀಕರಿಸಲಾಗಿದೆ. ನಾವು ಶೀಘ್ರದಲ್ಲಿ ಸಂಪರ್ಕಿಸುತ್ತೇವೆ."))}
         >
-          <Text style={styles.returnBtnText}>ತಪ್ಪಾದ ಸಾಮಾನು?</Text>
+          <Text style={styles.returnBtnText}>{t("ತಪ್ಪಾದ ಸಾಮಾನು?")}</Text>
         </TouchableOpacity>
       )}
     </View>

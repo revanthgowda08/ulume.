@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Animated, ActivityIndicator, Easing } from "react-native";
 import { colors } from "../theme/colors";
 import { typography } from "../theme/typography";
+import { useT } from "../i18n/useT";
 
 const SIZE = 96;
 
@@ -57,6 +58,7 @@ function WaveformBars() {
 export default function VoiceButton({ voiceState = "idle", onPress }) {
   const pulse = useRef(new Animated.Value(1)).current;
   const shake = useRef(new Animated.Value(0)).current;
+  const t = useT();
   const config = STATE_CONFIG[voiceState] ?? STATE_CONFIG.idle;
 
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function VoiceButton({ voiceState = "idle", onPress }) {
           activeOpacity={0.85}
           onPress={onPress}
           style={[styles.circle, { backgroundColor: config.bg }]}
-          accessibilityLabel={config.label}
+          accessibilityLabel={t(config.label)}
         >
           {voiceState === "idle" && <Text style={styles.icon}>🎙️</Text>}
           {voiceState === "listening" && <WaveformBars />}
@@ -107,7 +109,7 @@ export default function VoiceButton({ voiceState = "idle", onPress }) {
           {voiceState === "error" && <Text style={styles.icon}>🎙️</Text>}
         </TouchableOpacity>
       </Animated.View>
-      <Text style={styles.label}>{config.label}</Text>
+      <Text style={styles.label}>{t(config.label)}</Text>
     </View>
   );
 }

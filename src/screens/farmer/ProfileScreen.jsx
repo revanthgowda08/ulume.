@@ -6,9 +6,11 @@ import { spacing } from "../../theme/spacing";
 import { useAuthStore } from "../../store/authStore";
 import { signOutUser, createFarmerProfile } from "../../services/firebase/auth";
 import { useAppStore } from "../../store/appStore";
+import { useT } from "../../i18n/useT";
 
 const LANGUAGES = [
   { code: "kn", label: "ಕನ್ನಡ" },
+  { code: "en", label: "English" },
   { code: "hi", label: "हिन्दी" },
   { code: "ta", label: "தமிழ்" },
   { code: "te", label: "తెలుగు" },
@@ -20,41 +22,42 @@ export default function ProfileScreen() {
   const [name, setName] = useState(user?.name || "");
   const [village, setVillage] = useState(user?.village || "");
   const [saving, setSaving] = useState(false);
+  const t = useT();
 
   const handleSave = async () => {
     setSaving(true);
     try {
       const updated = await createFarmerProfile(user.uid, { name, village });
       setUser({ ...user, ...updated });
-      Alert.alert("ಯಶಸ್ಸು", "ಪ್ರೊಫೈಲ್ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ");
+      Alert.alert(t("ಯಶಸ್ಸು"), t("ಪ್ರೊಫೈಲ್ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ"));
     } finally {
       setSaving(false);
     }
   };
 
   const handleLogout = () => {
-    Alert.alert("ಲಾಗ್‌ಔಟ್", "ನೀವು ಖಚಿತವಾಗಿ ಲಾಗ್‌ಔಟ್ ಮಾಡಬೇಕೆ?", [
-      { text: "ಇಲ್ಲ", style: "cancel" },
-      { text: "ಹೌದು", onPress: async () => { await signOutUser(); clearAuth(); } },
+    Alert.alert(t("ಲಾಗ್‌ಔಟ್"), t("ನೀವು ಖಚಿತವಾಗಿ ಲಾಗ್‌ಔಟ್ ಮಾಡಬೇಕೆ?"), [
+      { text: t("ಇಲ್ಲ"), style: "cancel" },
+      { text: t("ಹೌದು"), onPress: async () => { await signOutUser(); clearAuth(); } },
     ]);
   };
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: spacing.screenPadding }}>
-      <Text style={styles.title}>ಪ್ರೊಫೈಲ್</Text>
+      <Text style={styles.title}>{t("ಪ್ರೊಫೈಲ್")}</Text>
 
       <View style={styles.avatarWrap}>
         <Text style={styles.avatar}>🧑‍🌾</Text>
         <Text style={styles.phone}>{user?.phone}</Text>
       </View>
 
-      <Text style={styles.label}>ಹೆಸರು</Text>
-      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="ನಿಮ್ಮ ಹೆಸರು" placeholderTextColor={colors.textMuted} />
+      <Text style={styles.label}>{t("ಹೆಸರು")}</Text>
+      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder={t("ನಿಮ್ಮ ಹೆಸರು")} placeholderTextColor={colors.textMuted} />
 
-      <Text style={styles.label}>ಗ್ರಾಮ</Text>
-      <TextInput style={styles.input} value={village} onChangeText={setVillage} placeholder="ನಿಮ್ಮ ಗ್ರಾಮ" placeholderTextColor={colors.textMuted} />
+      <Text style={styles.label}>{t("ಗ್ರಾಮ")}</Text>
+      <TextInput style={styles.input} value={village} onChangeText={setVillage} placeholder={t("ನಿಮ್ಮ ಗ್ರಾಮ")} placeholderTextColor={colors.textMuted} />
 
-      <Text style={styles.label}>ಭಾಷೆ</Text>
+      <Text style={styles.label}>{t("ಭಾಷೆ")}</Text>
       <View style={styles.langRow}>
         {LANGUAGES.map((l) => (
           <TouchableOpacity
@@ -68,11 +71,11 @@ export default function ProfileScreen() {
       </View>
 
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={saving}>
-        <Text style={styles.saveBtnText}>{saving ? "ಉಳಿಸಲಾಗುತ್ತಿದೆ..." : "ಉಳಿಸಿ"}</Text>
+        <Text style={styles.saveBtnText}>{saving ? t("ಉಳಿಸಲಾಗುತ್ತಿದೆ...") : t("ಉಳಿಸಿ")}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-        <Text style={styles.logoutBtnText}>ಲಾಗ್‌ಔಟ್</Text>
+        <Text style={styles.logoutBtnText}>{t("ಲಾಗ್‌ಔಟ್")}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

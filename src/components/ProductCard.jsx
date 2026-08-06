@@ -5,9 +5,11 @@ import { typography } from "../theme/typography";
 import { spacing } from "../theme/spacing";
 import { formatRupees, formatDistance } from "../utils/formatters";
 import { useCartStore } from "../store/cartStore";
+import { useT } from "../i18n/useT";
 
 export default function ProductCard({ product, onPress }) {
   const addItem = useCartStore((s) => s.addItem);
+  const t = useT();
   const discount = product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
   return (
@@ -34,9 +36,9 @@ export default function ProductCard({ product, onPress }) {
         <TouchableOpacity
           style={styles.addBtn}
           onPress={() => addItem(product, 1)}
-          accessibilityLabel="ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ"
+          accessibilityLabel={t("ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ")}
         >
-          <Text style={styles.addBtnText}>🛒 ಸೇರಿಸಿ</Text>
+          <Text style={styles.addBtnText}>🛒 {t("ಸೇರಿಸಿ")}</Text>
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

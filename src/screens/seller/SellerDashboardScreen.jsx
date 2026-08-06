@@ -5,7 +5,9 @@ import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { useAuthStore } from "../../store/authStore";
 import { listenToSellerPendingOrders, getSellerOrders, updateOrderStatus } from "../../services/firebase/firestore";
-import { formatRupees, formatOrderDate, ORDER_STATUS_LABELS_KN } from "../../utils/formatters";
+import { formatRupees, formatOrderDate, getOrderStatusLabel } from "../../utils/formatters";
+import { useAppStore } from "../../store/appStore";
+import { useT } from "../../i18n/useT";
 
 const isToday = (timestamp) => {
   const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -15,6 +17,8 @@ const isToday = (timestamp) => {
 
 export default function SellerDashboardScreen({ navigation }) {
   const seller = useAuthStore((s) => s.seller);
+  const language = useAppStore((s) => s.language);
+  const t = useT();
   const [pendingOrders, setPendingOrders] = useState([]);
   const [allOrders, setAllOrders] = useState([]);
 
@@ -33,9 +37,9 @@ export default function SellerDashboardScreen({ navigation }) {
   };
 
   const handleReject = (orderId) => {
-    Alert.alert("ಆರ್ಡರ್ ತಿರಸ್ಕರಿಸಿ", "ಖಚಿತವಾಗಿ ತಿರಸ್ಕರಿಸಬೇಕೆ?", [
-      { text: "ಇಲ್ಲ", style: "cancel" },
-      { text: "ಹೌದು", style: "destructive", onPress: () => updateOrderStatus(orderId, "cancelled", "seller") },
+    Alert.alert(t("ಆರ್ಡರ್ ತಿರಸ್ಕರಿಸಿ"), t("ಖಚಿತವಾಗಿ ತಿರಸ್ಕರಿಸಬೇಕೆ?"), [
+      { text: t("ಇಲ್ಲ"), style: "cancel" },
+      { text: t("ಹೌದು"), style: "destructive", onPress: () => updateOrderStatus(orderId, "cancelled", "seller") },
     ]);
   };
 
@@ -62,15 +66,15 @@ export default function SellerDashboardScreen({ navigation }) {
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
           <Text style={styles.statValue}>{todayOrders.length}</Text>
-          <Text style={styles.statLabel}>ಇಂದಿನ ಆರ್ಡರ್</Text>
+          <Text style={styles.statLabel}>{t("ಇಂದಿನ ಆರ್ಡರ್")}</Text>
         </View>
         <View style={styles.statBox}>
           <Text style={styles.statValue}>{formatRupees(todayGmv)}</Text>
-          <Text style={styles.statLabel}>ಇಂದಿನ GMV</Text>
+          <Text style={styles.statLabel}>{t("ಇಂದಿನ GMV")}</Text>
         </View>
         <View style={styles.statBox}>
           <Text style={[styles.statValue, pendingOrders.length > 0 && styles.statValueAlert]}>{pendingOrders.length}</Text>
-          <Text style={styles.statLabel}>ಬಾಕಿ</Text>
+          <Text style={styles.statLabel}>{t("ಬಾಕಿ")}</Text>
         </View>
       </View>
 
@@ -81,7 +85,7 @@ export default function SellerDashboardScreen({ navigation }) {
         ListHeaderComponent={
           pendingOrders.length > 0 && (
             <View style={styles.pendingSection}>
-              <Text style={styles.sectionTitle}>ಬಾಕಿ ಇರುವ ಆರ್ಡರ್‌ಗಳು</Text>
+              <Text style={styles.sectionTitle}>{t("ಬಾಕಿ ಇರುವ ಆರ್ಡರ್‌ಗಳು")}</Text>
               {pendingOrders.map((order) => (
                 <View key={order.id} style={styles.pendingCard}>
                   <Text style={styles.farmerName}>{order.farmerName || order.farmerPhone}</Text>
@@ -97,7 +101,7 @@ export default function SellerDashboardScreen({ navigation }) {
                   </View>
                 </View>
               ))}
-              <Text style={styles.sectionTitle}>ಎಲ್ಲಾ ಆರ್ಡರ್‌ಗಳು</Text>
+              <Text style={styles.sectionTitle}>{t("ಎಲ್ಲಾ ಆರ್ಡರ್‌ಗಳು")}</Text>
             </View>
           )
         }
@@ -107,7 +111,7 @@ export default function SellerDashboardScreen({ navigation }) {
               <Text style={styles.orderRowId}>{item.orderId}</Text>
               <Text style={styles.orderRowDate}>{formatOrderDate(item.createdAt)}</Text>
             </View>
-            <Text style={styles.orderRowStatus}>{ORDER_STATUS_LABELS_KN[item.status] || item.status}</Text>
+            <Text style={styles.orderRowStatus}>{getOrderStatusLabel(item.status, language)}</Text>
           </TouchableOpacity>
         )}
       />

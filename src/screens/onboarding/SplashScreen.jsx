@@ -2,8 +2,11 @@ import { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
+import { useT } from "../../i18n/useT";
 
 export default function SplashScreen({ navigation }) {
+  const t = useT();
+
   useEffect(() => {
     const timer = setTimeout(() => navigation.replace("LanguageSelect"), 1500);
     return () => clearTimeout(timer);
@@ -12,7 +15,7 @@ export default function SplashScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>ULUME</Text>
-      <Text style={styles.tagline}>ರೈತರಿಗಾಗಿ, ರೈತರ ಮಾತಿನಲ್ಲಿ</Text>
+      <Text style={styles.tagline}>{t("ರೈತರಿಗಾಗಿ, ರೈತರ ಮಾತಿನಲ್ಲಿ")}</Text>
     </View>
   );
 }

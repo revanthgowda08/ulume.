@@ -12,6 +12,7 @@ import { uploadProductImage, uploadAudioClip } from "../../services/firebase/sto
 import { createProduct } from "../../services/firebase/firestore";
 import { firestore } from "../../services/firebase/config";
 import { getGeohash } from "../../utils/geoUtils";
+import { useT } from "../../i18n/useT";
 
 const GOOGLE_TRANSLATE_KEY = process.env.EXPO_PUBLIC_GOOGLE_TRANSLATE_KEY;
 const GOOGLE_TTS_KEY = process.env.EXPO_PUBLIC_GOOGLE_TTS_KEY;
@@ -40,6 +41,7 @@ export default function AddProductScreen({ navigation }) {
   const [unit, setUnit] = useState("kg");
   const [tags, setTags] = useState("");
   const [saving, setSaving] = useState(false);
+  const t = useT();
 
   const handlePickImage = async (index) => {
     const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -62,7 +64,7 @@ export default function AddProductScreen({ navigation }) {
       );
       setNameKannada(res.data.data.translations[0].translatedText);
     } catch (e) {
-      Alert.alert("ದೋಷ", "ಅನುವಾದ ಆಗಲಿಲ್ಲ");
+      Alert.alert(t("ದೋಷ"), t("ಅನುವಾದ ಆಗಲಿಲ್ಲ"));
     } finally {
       setTranslating(false);
     }
@@ -70,7 +72,7 @@ export default function AddProductScreen({ navigation }) {
 
   const handleSave = async () => {
     if (!name.trim() || !nameKannada.trim() || !price || !stock) {
-      Alert.alert("ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ");
+      Alert.alert(t("ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ"));
       return;
     }
     setSaving(true);
@@ -117,11 +119,11 @@ export default function AddProductScreen({ navigation }) {
         ...(audioUrl ? { audioUrlKannada: audioUrl } : {}),
       });
 
-      Alert.alert("ಯಶಸ್ಸು", "ಉತ್ಪನ್ನ ಸೇರಿಸಲಾಗಿದೆ", [
-        { text: "ಸರಿ", onPress: () => navigation.replace("ProductList") },
+      Alert.alert(t("ಯಶಸ್ಸು"), t("ಉತ್ಪನ್ನ ಸೇರಿಸಲಾಗಿದೆ"), [
+        { text: t("ಸರಿ"), onPress: () => navigation.replace("ProductList") },
       ]);
     } catch (e) {
-      Alert.alert("ದೋಷ", "ಉಳಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.");
+      Alert.alert(t("ದೋಷ"), t("ಉಳಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
     } finally {
       setSaving(false);
     }
@@ -129,7 +131,7 @@ export default function AddProductScreen({ navigation }) {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: spacing.screenPadding, paddingBottom: spacing.xl * 2 }}>
-      <Text style={styles.title}>ಹೊಸ ಉತ್ಪನ್ನ ಸೇರಿಸಿ</Text>
+      <Text style={styles.title}>{t("ಹೊಸ ಉತ್ಪನ್ನ ಸೇರಿಸಿ")}</Text>
 
       <View style={styles.photoRow}>
         {images.map((uri, i) => (
@@ -139,10 +141,10 @@ export default function AddProductScreen({ navigation }) {
         ))}
       </View>
 
-      <Text style={styles.label}>ಹೆಸರು (English)</Text>
+      <Text style={styles.label}>{t("ಹೆಸರು")} (English)</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="e.g. Urea 45kg" placeholderTextColor={colors.textMuted} />
 
-      <Text style={styles.label}>ಹೆಸರು (ಕನ್ನಡ)</Text>
+      <Text style={styles.label}>{t("ಹೆಸರು")} (ಕನ್ನಡ)</Text>
       <View style={styles.translateRow}>
         <TextInput style={[styles.input, { flex: 1 }]} value={nameKannada} onChangeText={setNameKannada} placeholder="ಯೂರಿಯಾ 45 ಕೆಜಿ" placeholderTextColor={colors.textMuted} />
         <TouchableOpacity style={styles.translateBtn} onPress={handleAutoTranslate} disabled={translating}>
@@ -150,7 +152,7 @@ export default function AddProductScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.label}>ವಿಭಾಗ</Text>
+      <Text style={styles.label}>{t("ವಿಭಾಗ")}</Text>
       <View style={styles.pickerWrap}>
         <Picker selectedValue={category} onValueChange={setCategory}>
           {CATEGORIES.map((c) => (
@@ -161,7 +163,7 @@ export default function AddProductScreen({ navigation }) {
 
       <View style={styles.rowGap}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.label}>ಬೆಲೆ (₹)</Text>
+          <Text style={styles.label}>{t("ಬೆಲೆ")} (₹)</Text>
           <TextInput style={styles.input} value={price} onChangeText={setPrice} keyboardType="numeric" placeholder="500" placeholderTextColor={colors.textMuted} />
         </View>
         <View style={{ flex: 1 }}>
@@ -172,20 +174,20 @@ export default function AddProductScreen({ navigation }) {
 
       <View style={styles.rowGap}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.label}>ಸ್ಟಾಕ್</Text>
+          <Text style={styles.label}>{t("ಸ್ಟಾಕ್")}</Text>
           <TextInput style={styles.input} value={stock} onChangeText={setStock} keyboardType="numeric" placeholder="100" placeholderTextColor={colors.textMuted} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.label}>ಯೂನಿಟ್</Text>
+          <Text style={styles.label}>{t("ಯೂನಿಟ್")}</Text>
           <TextInput style={styles.input} value={unit} onChangeText={setUnit} placeholder="kg / bag / litre" placeholderTextColor={colors.textMuted} />
         </View>
       </View>
 
-      <Text style={styles.label}>ಟ್ಯಾಗ್ (comma separated)</Text>
+      <Text style={styles.label}>{t("ಟ್ಯಾಗ್")} (comma separated)</Text>
       <TextInput style={styles.input} value={tags} onChangeText={setTags} placeholder="urea, fertilizer" placeholderTextColor={colors.textMuted} />
 
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={saving}>
-        {saving ? <ActivityIndicator color={colors.white} /> : <Text style={styles.saveBtnText}>ಉಳಿಸಿ</Text>}
+        {saving ? <ActivityIndicator color={colors.white} /> : <Text style={styles.saveBtnText}>{t("ಉಳಿಸಿ")}</Text>}
       </TouchableOpacity>
     </ScrollView>
   );

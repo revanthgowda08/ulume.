@@ -5,7 +5,9 @@ import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { getFarmerOrders } from "../../services/firebase/firestore";
 import { useAuthStore } from "../../store/authStore";
-import { formatRupees, formatOrderDate, ORDER_STATUS_LABELS_KN } from "../../utils/formatters";
+import { useAppStore } from "../../store/appStore";
+import { formatRupees, formatOrderDate, getOrderStatusLabel } from "../../utils/formatters";
+import { useT } from "../../i18n/useT";
 
 const STATUS_COLORS = {
   placed: colors.accent,
@@ -18,6 +20,8 @@ const STATUS_COLORS = {
 
 export default function OrderHistoryScreen({ navigation }) {
   const user = useAuthStore((s) => s.user);
+  const language = useAppStore((s) => s.language);
+  const t = useT();
   const [orders, setOrders] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,7 +49,7 @@ export default function OrderHistoryScreen({ navigation }) {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.title}>ನನ್ನ ಆರ್ಡರ್‌ಗಳು</Text>
+        <Text style={styles.title}>{t("ನನ್ನ ಆರ್ಡರ್‌ಗಳು")}</Text>
       </View>
       {loading ? (
         <ActivityIndicator style={{ marginTop: spacing.xl }} color={colors.primary} />
@@ -62,24 +66,24 @@ export default function OrderHistoryScreen({ navigation }) {
               <View style={styles.cardTop}>
                 <Text style={styles.orderId}>{item.orderId}</Text>
                 <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[item.status] || colors.textMuted }]}>
-                  <Text style={styles.statusBadgeText}>{ORDER_STATUS_LABELS_KN[item.status] || item.status}</Text>
+                  <Text style={styles.statusBadgeText}>{getOrderStatusLabel(item.status, language)}</Text>
                 </View>
               </View>
               <Text style={styles.date}>{formatOrderDate(item.createdAt)}</Text>
-              <Text style={styles.total}>{formatRupees(item.total)} · {item.items?.length || 0} ಐಟಂ</Text>
+              <Text style={styles.total}>{formatRupees(item.total)} · {item.items?.length || 0} {t("ಐಟಂ")}</Text>
             </TouchableOpacity>
           )}
           ListFooterComponent={
             cursor && (
               <TouchableOpacity style={styles.loadMoreBtn} onPress={handleLoadMore} disabled={loadingMore}>
-                {loadingMore ? <ActivityIndicator color={colors.primary} /> : <Text style={styles.loadMoreText}>ಇನ್ನಷ್ಟು ತೋರಿಸಿ</Text>}
+                {loadingMore ? <ActivityIndicator color={colors.primary} /> : <Text style={styles.loadMoreText}>{t("ಇನ್ನಷ್ಟು ತೋರಿಸಿ")}</Text>}
               </TouchableOpacity>
             )
           }
           ListEmptyComponent={
             <View style={styles.empty}>
               <Text style={styles.emptyIcon}>📦</Text>
-              <Text style={styles.emptyText}>ಇನ್ನೂ ಯಾವುದೇ ಆರ್ಡರ್ ಇಲ್ಲ</Text>
+              <Text style={styles.emptyText}>{t("ಇನ್ನೂ ಯಾವುದೇ ಆರ್ಡರ್ ಇಲ್ಲ")}</Text>
             </View>
           }
         />

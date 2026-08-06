@@ -7,9 +7,11 @@ import { spacing } from "../../theme/spacing";
 import { useAuthStore } from "../../store/authStore";
 import { getSellerProducts } from "../../services/firebase/firestore";
 import { formatRupees } from "../../utils/formatters";
+import { useT } from "../../i18n/useT";
 
 export default function ProductListScreen({ navigation }) {
   const seller = useAuthStore((s) => s.seller);
+  const t = useT();
   const [products, setProducts] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,9 +42,9 @@ export default function ProductListScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>ನನ್ನ ಉತ್ಪನ್ನಗಳು</Text>
+        <Text style={styles.title}>{t("ನನ್ನ ಉತ್ಪನ್ನಗಳು")}</Text>
         <TouchableOpacity style={styles.addBtn} onPress={() => navigation.navigate("AddProduct")}>
-          <Text style={styles.addBtnText}>+ ಸೇರಿಸಿ</Text>
+          <Text style={styles.addBtnText}>+ {t("ಸೇರಿಸಿ")}</Text>
         </TouchableOpacity>
       </View>
 
@@ -58,9 +60,9 @@ export default function ProductListScreen({ navigation }) {
               <LazyImage uri={item.images?.[0]} style={styles.image} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.name} numberOfLines={2}>{item.nameKannada || item.name}</Text>
-                <Text style={styles.price}>{formatRupees(item.price)} · ಸ್ಟಾಕ್ {item.stock}</Text>
+                <Text style={styles.price}>{formatRupees(item.price)} · {t("ಸ್ಟಾಕ್")} {item.stock}</Text>
                 <Text style={[styles.availability, !item.isAvailable && styles.unavailable]}>
-                  {item.isAvailable ? "✅ ಲಭ್ಯ" : "❌ ಲಭ್ಯವಿಲ್ಲ"}
+                  {item.isAvailable ? `✅ ${t("ಲಭ್ಯ")}` : `❌ ${t("ಲಭ್ಯವಿಲ್ಲ")}`}
                 </Text>
               </View>
             </View>
@@ -68,13 +70,13 @@ export default function ProductListScreen({ navigation }) {
           ListFooterComponent={
             cursor && (
               <TouchableOpacity style={styles.loadMoreBtn} onPress={handleLoadMore} disabled={loadingMore}>
-                {loadingMore ? <ActivityIndicator color={colors.primary} /> : <Text style={styles.loadMoreText}>ಇನ್ನಷ್ಟು ತೋರಿಸಿ</Text>}
+                {loadingMore ? <ActivityIndicator color={colors.primary} /> : <Text style={styles.loadMoreText}>{t("ಇನ್ನಷ್ಟು ತೋರಿಸಿ")}</Text>}
               </TouchableOpacity>
             )
           }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>ಇನ್ನೂ ಯಾವುದೇ ಉತ್ಪನ್ನ ಸೇರಿಸಿಲ್ಲ</Text>
+              <Text style={styles.emptyText}>{t("ಇನ್ನೂ ಯಾವುದೇ ಉತ್ಪನ್ನ ಸೇರಿಸಿಲ್ಲ")}</Text>
             </View>
           }
         />

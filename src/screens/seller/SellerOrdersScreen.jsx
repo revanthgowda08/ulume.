@@ -5,7 +5,9 @@ import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { useAuthStore } from "../../store/authStore";
 import { getSellerOrders } from "../../services/firebase/firestore";
-import { formatRupees, formatOrderDate, ORDER_STATUS_LABELS_KN } from "../../utils/formatters";
+import { formatRupees, formatOrderDate, getOrderStatusLabel } from "../../utils/formatters";
+import { useAppStore } from "../../store/appStore";
+import { useT } from "../../i18n/useT";
 
 const FILTERS = [
   { key: "all", label: "ಎಲ್ಲಾ" },
@@ -17,6 +19,8 @@ const FILTERS = [
 
 export default function SellerOrdersScreen({ navigation }) {
   const seller = useAuthStore((s) => s.seller);
+  const language = useAppStore((s) => s.language);
+  const t = useT();
   const [orders, setOrders] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [filter, setFilter] = useState("all");
@@ -50,7 +54,7 @@ export default function SellerOrdersScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>ಆರ್ಡರ್‌ಗಳು</Text>
+        <Text style={styles.title}>{t("ಆರ್ಡರ್‌ಗಳು")}</Text>
       </View>
 
       <FlatList
@@ -64,7 +68,7 @@ export default function SellerOrdersScreen({ navigation }) {
             style={[styles.chip, filter === item.key && styles.chipActive]}
             onPress={() => setFilter(item.key)}
           >
-            <Text style={[styles.chipText, filter === item.key && styles.chipTextActive]}>{item.label}</Text>
+            <Text style={[styles.chipText, filter === item.key && styles.chipTextActive]}>{t(item.label)}</Text>
           </TouchableOpacity>
         )}
       />
@@ -85,14 +89,14 @@ export default function SellerOrdersScreen({ navigation }) {
               </View>
               <View style={styles.right}>
                 <Text style={styles.total}>{formatRupees(item.total)}</Text>
-                <Text style={styles.status}>{ORDER_STATUS_LABELS_KN[item.status] || item.status}</Text>
+                <Text style={styles.status}>{getOrderStatusLabel(item.status, language)}</Text>
               </View>
             </TouchableOpacity>
           )}
           ListFooterComponent={
             cursor && (
               <TouchableOpacity style={styles.loadMoreBtn} onPress={handleLoadMore} disabled={loadingMore}>
-                {loadingMore ? <ActivityIndicator color={colors.primary} /> : <Text style={styles.loadMoreText}>ಇನ್ನಷ್ಟು ತೋರಿಸಿ</Text>}
+                {loadingMore ? <ActivityIndicator color={colors.primary} /> : <Text style={styles.loadMoreText}>{t("ಇನ್ನಷ್ಟು ತೋರಿಸಿ")}</Text>}
               </TouchableOpacity>
             )
           }

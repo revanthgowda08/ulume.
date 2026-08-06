@@ -6,10 +6,12 @@ import { spacing } from "../../theme/spacing";
 import ProductCard from "../../components/ProductCard";
 import { getProductsPage } from "../../services/firebase/firestore";
 import { useAppStore } from "../../store/appStore";
+import { useT } from "../../i18n/useT";
 
 export default function CategoryScreen({ route, navigation }) {
   const { category, label } = route.params;
   const district = useAppStore((s) => s.district);
+  const t = useT();
   const [products, setProducts] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ export default function CategoryScreen({ route, navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>{label}</Text>
+        <Text style={styles.title}>{t(label)}</Text>
       </View>
       {loading ? (
         <ActivityIndicator style={{ marginTop: spacing.xl }} color={colors.primary} />
@@ -54,13 +56,13 @@ export default function CategoryScreen({ route, navigation }) {
           ListFooterComponent={
             cursor && (
               <TouchableOpacity style={styles.loadMoreBtn} onPress={handleLoadMore} disabled={loadingMore}>
-                {loadingMore ? <ActivityIndicator color={colors.primary} /> : <Text style={styles.loadMoreText}>ಇನ್ನಷ್ಟು ತೋರಿಸಿ</Text>}
+                {loadingMore ? <ActivityIndicator color={colors.primary} /> : <Text style={styles.loadMoreText}>{t("ಇನ್ನಷ್ಟು ತೋರಿಸಿ")}</Text>}
               </TouchableOpacity>
             )
           }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>ಈ ವಿಭಾಗದಲ್ಲಿ ಏನೂ ಸಿಗಲಿಲ್ಲ.</Text>
+              <Text style={styles.emptyText}>{t("ಈ ವಿಭಾಗದಲ್ಲಿ ಏನೂ ಸಿಗಲಿಲ್ಲ.")}</Text>
             </View>
           }
         />

@@ -8,10 +8,12 @@ import { formatRupees, calculateDeliveryCharge } from "../../utils/formatters";
 import { useCartStore } from "../../store/cartStore";
 import { useAuthStore } from "../../store/authStore";
 import { placeOrder, getSellerById } from "../../services/firebase/firestore";
+import { useT } from "../../i18n/useT";
 
 const STEPS = ["ವಿಳಾಸ", "ಪಾವತಿ", "ಖಚಿತ", "ಯಶಸ್ಸು"];
 
 export default function CheckoutScreen({ navigation }) {
+  const t = useT();
   const [step, setStep] = useState(0);
   const [address, setAddress] = useState("");
   const [placing, setPlacing] = useState(false);
@@ -92,7 +94,7 @@ export default function CheckoutScreen({ navigation }) {
       clearCart();
       setStep(3);
     } catch (e) {
-      Alert.alert("ದೋಷ", "ಆರ್ಡರ್ ಇಡಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.");
+      Alert.alert(t("ದೋಷ"), t("ಆರ್ಡರ್ ಇಡಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
     } finally {
       setPlacing(false);
     }
@@ -110,63 +112,63 @@ export default function CheckoutScreen({ navigation }) {
       </View>
       <View style={styles.stepLabels}>
         {STEPS.map((s, i) => (
-          <Text key={s} style={[styles.stepLabel, i <= step && styles.stepLabelActive]}>{s}</Text>
+          <Text key={s} style={[styles.stepLabel, i <= step && styles.stepLabelActive]}>{t(s)}</Text>
         ))}
       </View>
 
       <View style={styles.body}>
         {step === 0 && (
           <View>
-            <Text style={styles.sectionTitle}>ವಿಳಾಸ</Text>
+            <Text style={styles.sectionTitle}>{t("ವಿಳಾಸ")}</Text>
             <TextInput
               style={styles.addressInput}
               multiline
               value={address}
               onChangeText={setAddress}
-              placeholder="ನಿಮ್ಮ ಪೂರ್ಣ ವಿಳಾಸ ಬರೆಯಿರಿ"
+              placeholder={t("ನಿಮ್ಮ ಪೂರ್ಣ ವಿಳಾಸ ಬರೆಯಿರಿ")}
               placeholderTextColor={colors.textMuted}
             />
             <TouchableOpacity style={styles.nextBtn} onPress={() => setStep(1)} disabled={!address.trim()}>
-              <Text style={styles.nextBtnText}>ಮುಂದೆ</Text>
+              <Text style={styles.nextBtnText}>{t("ಮುಂದೆ")}</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {step === 1 && (
           <View>
-            <Text style={styles.sectionTitle}>ಪಾವತಿ</Text>
+            <Text style={styles.sectionTitle}>{t("ಪಾವತಿ")}</Text>
             <View style={styles.codCard}>
-              <Text style={styles.codCardTitle}>💰 ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ (CoD)</Text>
-              <Text style={styles.codCardSub}>ಆಯ್ಕೆಯಾಗಿದೆ</Text>
+              <Text style={styles.codCardTitle}>💰 {t("ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ")} (CoD)</Text>
+              <Text style={styles.codCardSub}>{t("ಆಯ್ಕೆಯಾಗಿದೆ")}</Text>
             </View>
             <View style={styles.upiCard}>
               <Text style={styles.upiCardTitle}>UPI</Text>
-              <Text style={styles.upiCardSub}>ಶೀಘ್ರದಲ್ಲಿ ಬರುತ್ತದೆ</Text>
+              <Text style={styles.upiCardSub}>{t("ಶೀಘ್ರದಲ್ಲಿ ಬರುತ್ತದೆ")}</Text>
             </View>
             <TouchableOpacity style={styles.nextBtn} onPress={() => setStep(2)}>
-              <Text style={styles.nextBtnText}>ಮುಂದೆ</Text>
+              <Text style={styles.nextBtnText}>{t("ಮುಂದೆ")}</Text>
             </TouchableOpacity>
           </View>
         )}
 
         {step === 2 && (
           <View>
-            <Text style={styles.sectionTitle}>ಆರ್ಡರ್ ಸಾರಾಂಶ</Text>
+            <Text style={styles.sectionTitle}>{t("ಆರ್ಡರ್ ಸಾರಾಂಶ")}</Text>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>ಉಪಮೊತ್ತ</Text>
+              <Text style={styles.summaryLabel}>{t("ಉಪಮೊತ್ತ")}</Text>
               <Text style={styles.summaryValue}>{formatRupees(subtotal)}</Text>
             </View>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>ಡೆಲಿವರಿ</Text>
-              <Text style={styles.summaryValue}>{deliveryCharge === 0 ? "ಉಚಿತ" : formatRupees(deliveryCharge)}</Text>
+              <Text style={styles.summaryLabel}>{t("ಡೆಲಿವರಿ")}</Text>
+              <Text style={styles.summaryValue}>{deliveryCharge === 0 ? t("ಉಚಿತ") : formatRupees(deliveryCharge)}</Text>
             </View>
             <View style={[styles.summaryRow, styles.totalRow]}>
-              <Text style={styles.totalLabel}>ಒಟ್ಟು</Text>
+              <Text style={styles.totalLabel}>{t("ಒಟ್ಟು")}</Text>
               <Text style={styles.totalValue}>{formatRupees(total)}</Text>
             </View>
             <Text style={styles.addressPreview}>📍 {address}</Text>
             <TouchableOpacity style={styles.nextBtn} onPress={handlePlaceOrder} disabled={placing}>
-              {placing ? <ActivityIndicator color={colors.white} /> : <Text style={styles.nextBtnText}>ಆರ್ಡರ್ ಇಡಿ</Text>}
+              {placing ? <ActivityIndicator color={colors.white} /> : <Text style={styles.nextBtnText}>{t("ಆರ್ಡರ್ ಇಡಿ")}</Text>}
             </TouchableOpacity>
           </View>
         )}
@@ -174,14 +176,14 @@ export default function CheckoutScreen({ navigation }) {
         {step === 3 && (
           <View style={styles.successBox}>
             <Text style={styles.successIcon}>🎉</Text>
-            <Text style={styles.successTitle}>ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ!</Text>
+            <Text style={styles.successTitle}>{t("ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ!")}</Text>
             <Text style={styles.orderIdText}>{orderId}</Text>
-            <Text style={styles.whatsappText}>✅ WhatsApp ನಲ್ಲಿ ಖಚಿತೀಕರಣ ಕಳುಹಿಸಲಾಗಿದೆ</Text>
+            <Text style={styles.whatsappText}>✅ {t("WhatsApp ನಲ್ಲಿ ಖಚಿತೀಕರಣ ಕಳುಹಿಸಲಾಗಿದೆ")}</Text>
             <TouchableOpacity
               style={styles.nextBtn}
               onPress={() => navigation.replace("OrderTracking", { orderId })}
             >
-              <Text style={styles.nextBtnText}>ಆರ್ಡರ್ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</Text>
+              <Text style={styles.nextBtnText}>{t("ಆರ್ಡರ್ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ")}</Text>
             </TouchableOpacity>
           </View>
         )}

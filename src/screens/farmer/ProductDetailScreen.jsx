@@ -8,6 +8,7 @@ import { spacing } from "../../theme/spacing";
 import { formatRupees } from "../../utils/formatters";
 import { getProductById, getSellerById, incrementProductViewCount } from "../../services/firebase/firestore";
 import { useCartStore } from "../../store/cartStore";
+import { useT } from "../../i18n/useT";
 
 const { width } = Dimensions.get("window");
 
@@ -18,6 +19,7 @@ export default function ProductDetailScreen({ route, navigation }) {
   const [qty, setQty] = useState(1);
   const [loading, setLoading] = useState(true);
   const addItem = useCartStore((s) => s.addItem);
+  const t = useT();
 
   useEffect(() => {
     (async () => {
@@ -95,11 +97,11 @@ export default function ProductDetailScreen({ route, navigation }) {
           )}
 
           <View style={styles.codBadge}>
-            <Text style={styles.codText}>💰 ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ</Text>
+            <Text style={styles.codText}>💰 {t("ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ")}</Text>
           </View>
 
           <View style={styles.returnBox}>
-            <Text style={styles.returnText}>🔄 ತಪ್ಪಾದ ಸಾಮಾನು — ₹ ವಾಪಸ್ ಖಚಿತ</Text>
+            <Text style={styles.returnText}>🔄 {t("ತಪ್ಪಾದ ಸಾಮಾನು — ₹ ವಾಪಸ್ ಖಚಿತ")}</Text>
           </View>
 
           {product.descriptionKannada && (
@@ -107,7 +109,7 @@ export default function ProductDetailScreen({ route, navigation }) {
           )}
 
           <View style={styles.qtyRow}>
-            <Text style={styles.qtyLabel}>ಪ್ರಮಾಣ</Text>
+            <Text style={styles.qtyLabel}>{t("ಪ್ರಮಾಣ")}</Text>
             <View style={styles.qtyControls}>
               <TouchableOpacity style={styles.qtyBtn} onPress={() => setQty((q) => Math.max(1, q - 1))}>
                 <Text style={styles.qtyBtnText}>−</Text>
@@ -122,7 +124,7 @@ export default function ProductDetailScreen({ route, navigation }) {
       </ScrollView>
 
       <TouchableOpacity style={styles.addToCartBtn} onPress={handleAddToCart}>
-        <Text style={styles.addToCartText}>🛒 ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ — {formatRupees(product.price * qty)}</Text>
+        <Text style={styles.addToCartText}>🛒 {t("ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಿ")} — {formatRupees(product.price * qty)}</Text>
       </TouchableOpacity>
     </View>
   );

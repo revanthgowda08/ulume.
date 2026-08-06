@@ -23,6 +23,7 @@ import { startRecording, stopAndTranscribe } from "../../services/voice/speechTo
 import { parseVoiceQuery } from "../../utils/voiceQueryParser";
 import { getNearbyProducts, getNearbySellersGeo } from "../../utils/geoUtils";
 import { formatDistance } from "../../utils/formatters";
+import { useT } from "../../i18n/useT";
 
 const CATEGORIES = [
   { key: "seeds", icon: "🌱", label: "ಬೀಜ" },
@@ -45,6 +46,7 @@ export default function HomeScreen({ navigation }) {
   const [nearbySellers, setNearbySellers] = useState([]);
   const [popularProducts, setPopularProducts] = useState([]);
   const [recording, setRecording] = useState(null);
+  const t = useT();
 
   useEffect(() => {
     (async () => {
@@ -120,7 +122,7 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.headerTopRow}>
             <View style={styles.locationRow}>
               <Text style={styles.pin}>📍</Text>
-              <Text style={styles.districtText} numberOfLines={1}>{district || "ಸ್ಥಳ ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ..."}</Text>
+              <Text style={styles.districtText} numberOfLines={1}>{district || t("ಸ್ಥಳ ಪತ್ತೆ ಮಾಡಲಾಗುತ್ತಿದೆ...")}</Text>
             </View>
             <View style={styles.headerIcons}>
               <TouchableOpacity onPress={() => Linking.openURL(`https://wa.me/${HELPLINE_NUMBER}`)} style={styles.iconBtn}>
@@ -142,20 +144,20 @@ export default function HomeScreen({ navigation }) {
           <View style={styles.searchRow}>
             <TextInput
               style={styles.searchInput}
-              placeholder="ಹುಡುಕಿ... (ಉದಾ: ಯೂರಿಯಾ)"
+              placeholder={t("ಹುಡುಕಿ... (ಉದಾ: ಯೂರಿಯಾ)")}
               placeholderTextColor={colors.textMuted}
               value={searchText}
               onChangeText={setSearchText}
               onSubmitEditing={handleTextSearch}
             />
             <TouchableOpacity style={styles.goBtn} onPress={handleTextSearch}>
-              <Text style={styles.goBtnText}>ಹೋಗಿ</Text>
+              <Text style={styles.goBtnText}>{t("ಹೋಗಿ")}</Text>
             </TouchableOpacity>
           </View>
         </LinearGradient>
 
         <LinearGradient colors={[colors.accent, colors.accentDark]} style={styles.banner}>
-          <Text style={styles.bannerText}>🌧️ ಮಳೆಗಾಲ ಬಂತು — ಬಿತ್ತನೆ ಸಮಯ!</Text>
+          <Text style={styles.bannerText}>🌧️ {t("ಮಳೆಗಾಲ ಬಂತು — ಬಿತ್ತನೆ ಸಮಯ!")}</Text>
         </LinearGradient>
 
         <View style={styles.section}>
@@ -167,7 +169,7 @@ export default function HomeScreen({ navigation }) {
                 onPress={() => navigation.navigate("Category", { category: cat.key, label: cat.label })}
               >
                 <Text style={styles.categoryIcon}>{cat.icon}</Text>
-                <Text style={styles.categoryLabel} numberOfLines={1}>{cat.label}</Text>
+                <Text style={styles.categoryLabel} numberOfLines={1}>{t(cat.label)}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -175,7 +177,7 @@ export default function HomeScreen({ navigation }) {
 
         {nearbySellers.length > 0 && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>ನಿಮ್ಮ ಹತ್ತಿರ</Text>
+            <Text style={styles.sectionTitle}>{t("ನಿಮ್ಮ ಹತ್ತಿರ")}</Text>
             <FlatList
               data={nearbySellers}
               horizontal
@@ -197,7 +199,7 @@ export default function HomeScreen({ navigation }) {
         )}
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>ಜನಪ್ರಿಯ</Text>
+          <Text style={styles.sectionTitle}>{t("ಜನಪ್ರಿಯ")}</Text>
           {popularProducts.map((product) => (
             <ProductCard
               key={product.id}

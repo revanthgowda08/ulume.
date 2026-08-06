@@ -3,9 +3,11 @@ import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { useAppStore } from "../../store/appStore";
+import { useT } from "../../i18n/useT";
 
 const LANGUAGES = [
   { code: "kn", label: "ಕನ್ನಡ" },
+  { code: "en", label: "English" },
   { code: "hi", label: "हिन्दी" },
   { code: "ta", label: "தமிழ்" },
   { code: "te", label: "తెలుగు" },
@@ -13,6 +15,7 @@ const LANGUAGES = [
 
 export default function LanguageSelectScreen({ navigation }) {
   const setLanguage = useAppStore((s) => s.setLanguage);
+  const t = useT();
 
   const handleSelect = (code) => {
     setLanguage(code);
@@ -21,7 +24,7 @@ export default function LanguageSelectScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ನಿಮ್ಮ ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಿ</Text>
+      <Text style={styles.title}>{t("ನಿಮ್ಮ ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಿ")}</Text>
       <Text style={styles.subtitle}>Select your language</Text>
       <View style={styles.grid}>
         {LANGUAGES.map((lang) => (

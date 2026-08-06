@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../theme/colors";
 import { typography } from "../theme/typography";
 import { useCartStore } from "../store/cartStore";
+import { useT } from "../i18n/useT";
 
 const TABS = [
   { name: "Home", icon: "🏠", label: "ಮುಖಪುಟ" },
@@ -15,6 +16,7 @@ const TABS = [
 export default function BottomNav({ state, navigation }) {
   const insets = useSafeAreaInsets();
   const count = useCartStore((s) => s.getCount());
+  const t = useT();
 
   return (
     <View style={[styles.wrap, { paddingBottom: Math.max(insets.bottom, 8) }]}>
@@ -25,7 +27,7 @@ export default function BottomNav({ state, navigation }) {
             key={tab.name}
             style={styles.tab}
             onPress={() => navigation.navigate(tab.name)}
-            accessibilityLabel={tab.label}
+            accessibilityLabel={t(tab.label)}
           >
             <View>
               <Text style={[styles.icon, focused && styles.iconActive]}>{tab.icon}</Text>
@@ -35,7 +37,7 @@ export default function BottomNav({ state, navigation }) {
                 </View>
               )}
             </View>
-            <Text style={[styles.label, focused && styles.labelActive]}>{tab.label}</Text>
+            <Text style={[styles.label, focused && styles.labelActive]}>{t(tab.label)}</Text>
           </TouchableOpacity>
         );
       })}

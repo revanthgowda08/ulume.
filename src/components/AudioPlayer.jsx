@@ -3,10 +3,12 @@ import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from "react-nat
 import { getOrCreateAudioForText, playAudioFile } from "../services/voice/textToSpeech";
 import { colors } from "../theme/colors";
 import { spacing } from "../theme/spacing";
+import { useT } from "../i18n/useT";
 
 // Never autoplays — only fetches/plays audio when the farmer taps this button (STEP 15.6).
 export default function AudioPlayer({ cacheKey, text }) {
   const [status, setStatus] = useState("idle"); // idle | loading | playing
+  const t = useT();
 
   const handlePress = async () => {
     if (status === "loading" || status === "playing" || !text) return;
@@ -24,7 +26,7 @@ export default function AudioPlayer({ cacheKey, text }) {
   };
 
   return (
-    <TouchableOpacity style={styles.btn} onPress={handlePress} accessibilityLabel="ಆಡಿಯೋ ಕೇಳಿ">
+    <TouchableOpacity style={styles.btn} onPress={handlePress} accessibilityLabel={t("ಆಡಿಯೋ ಕೇಳಿ")}>
       {status === "loading" ? (
         <ActivityIndicator size="small" color={colors.primary} />
       ) : (

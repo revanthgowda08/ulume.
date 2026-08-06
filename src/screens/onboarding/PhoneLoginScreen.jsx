@@ -3,24 +3,48 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
-import { sendOTP } from "../../services/firebase/auth";
+import { loginWithPhone, createFarmerProfile, createSellerProfile } from "../../services/firebase/auth";
+import { useAuthStore } from "../../store/authStore";
+import { useAppStore } from "../../store/appStore";
+import { useT } from "../../i18n/useT";
 
-export default function PhoneLoginScreen({ navigation }) {
+export default function PhoneLoginScreen() {
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState("farmer");
   const [loading, setLoading] = useState(false);
+  const setUser = useAuthStore((s) => s.setUser);
+  const setSeller = useAuthStore((s) => s.setSeller);
+  const language = useAppStore((s) => s.language);
+  const t = useT();
 
-  const handleSendOTP = async () => {
+  const handleContinue = async () => {
     if (phone.length !== 10) {
-      Alert.alert("ತಪ್ಪು ಸಂಖ್ಯೆ", "10 ಅಂಕಿಯ ಮೊಬೈಲ್ ನಂಬರ್ ಹಾಕಿ");
+      Alert.alert(t("ತಪ್ಪು ಸಂಖ್ಯೆ"), t("10 ಅಂಕಿಯ ಮೊಬೈಲ್ ನಂಬರ್ ಹಾಕಿ"));
       return;
     }
     setLoading(true);
     try {
-      await sendOTP(`+91${phone}`);
-      navigation.navigate("OTP", { phone: `+91${phone}`, role });
+      const { user } = await loginWithPhone(`+91${phone}`);
+      if (role === "seller") {
+        const seller = await createSellerProfile(user.uid, {
+          phone: `+91${phone}`,
+          ownerName: "",
+          shopName: "",
+          shopNameKannada: "",
+        });
+        setSeller(seller);
+      } else {
+        const farmer = await createFarmerProfile(user.uid, {
+          phone: `+91${phone}`,
+          name: "",
+          language,
+        });
+        setUser(farmer);
+      }
+      // AppNavigator's onAuthStateChanged listener also picks this up and
+      // routes to FarmerNavigator/SellerNavigator once userType is set.
     } catch (e) {
-      Alert.alert("ದೋಷ", "OTP ಕಳುಹಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.");
+      Alert.alert(t("ದೋಷ"), t("ಲಾಗಿನ್ ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
     } finally {
       setLoading(false);
     }
@@ -28,12 +52,12 @@ export default function PhoneLoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>ನಿಮ್ಮ ಮೊಬೈಲ್ ನಂಬರ್ ಹಾಕಿ</Text>
+      <Text style={styles.title}>{t("ನಿಮ್ಮ ಮೊಬೈಲ್ ನಂಬರ್ ಹಾಕಿ")}</Text>
 
       <View style={styles.roleRow}>
         {[
-          { key: "farmer", label: "🧑‍🌾 ರೈತ" },
-          { key: "seller", label: "🏪 ಮಾರಾಟಗಾರ" },
+          { key: "farmer", label: `🧑‍🌾 ${t("ರೈತ")}` },
+          { key: "seller", label: `🏪 ${t("ಮಾರಾಟಗಾರ")}` },
         ].map((r) => (
           <TouchableOpacity
             key={r.key}
@@ -58,8 +82,8 @@ export default function PhoneLoginScreen({ navigation }) {
         />
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={handleSendOTP} disabled={loading}>
-        {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.buttonText}>OTP ಕಳುಹಿಸಿ</Text>}
+      <TouchableOpacity style={styles.button} onPress={handleContinue} disabled={loading}>
+        {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.buttonText}>{t("ಮುಂದುವರಿಸಿ")}</Text>}
       </TouchableOpacity>
     </View>
   );

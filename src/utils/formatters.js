@@ -19,6 +19,20 @@ export const ORDER_STATUS_LABELS_KN = {
   returned: "ವಾಪಸ್ ಆಗಿದೆ",
 };
 
+export const ORDER_STATUS_LABELS_EN = {
+  placed: "Order placed",
+  confirmed: "Confirmed",
+  out_for_delivery: "Out for delivery",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+  returned: "Returned",
+};
+
+// Prefer this over indexing ORDER_STATUS_LABELS_KN directly so status labels
+// respect the selected language.
+export const getOrderStatusLabel = (status, language) =>
+  (language === "en" ? ORDER_STATUS_LABELS_EN : ORDER_STATUS_LABELS_KN)[status] || status;
+
 export const ORDER_STATUS_STEPS = ["placed", "confirmed", "out_for_delivery", "delivered"];
 export const ORDER_STATUS_ICONS = ["📋", "✅", "🚚", "🏠"];
 

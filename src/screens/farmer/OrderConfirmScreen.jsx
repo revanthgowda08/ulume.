@@ -5,10 +5,12 @@ import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { formatRupees } from "../../utils/formatters";
 import { firestore } from "../../services/firebase/config";
+import { useT } from "../../i18n/useT";
 
 export default function OrderConfirmScreen({ route, navigation }) {
   const { orderId } = route.params;
   const [order, setOrder] = useState(null);
+  const t = useT();
 
   useEffect(() => {
     firestore()
@@ -21,24 +23,24 @@ export default function OrderConfirmScreen({ route, navigation }) {
   return (
     <View style={styles.screen}>
       <Text style={styles.icon}>🎉</Text>
-      <Text style={styles.title}>ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ!</Text>
+      <Text style={styles.title}>{t("ಆರ್ಡರ್ ಯಶಸ್ವಿಯಾಗಿದೆ!")}</Text>
       <Text style={styles.orderId}>{orderId}</Text>
 
       {order ? (
         <View style={styles.card}>
-          <Text style={styles.cardRow}>ಒಟ್ಟು: {formatRupees(order.total)}</Text>
-          <Text style={styles.cardRow}>ಪಾವತಿ: 💰 ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ</Text>
-          <Text style={styles.whatsapp}>✅ WhatsApp ನಲ್ಲಿ ಖಚಿತೀಕರಣ ಕಳುಹಿಸಲಾಗಿದೆ</Text>
+          <Text style={styles.cardRow}>{t("ಒಟ್ಟು")}: {formatRupees(order.total)}</Text>
+          <Text style={styles.cardRow}>{t("ಪಾವತಿ")}: 💰 {t("ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ")}</Text>
+          <Text style={styles.whatsapp}>✅ {t("WhatsApp ನಲ್ಲಿ ಖಚಿತೀಕರಣ ಕಳುಹಿಸಲಾಗಿದೆ")}</Text>
         </View>
       ) : (
         <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.lg }} />
       )}
 
       <TouchableOpacity style={styles.trackBtn} onPress={() => navigation.replace("OrderTracking", { orderId })}>
-        <Text style={styles.trackBtnText}>ಆರ್ಡರ್ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</Text>
+        <Text style={styles.trackBtnText}>{t("ಆರ್ಡರ್ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ")}</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.homeLink}>
-        <Text style={styles.homeLinkText}>ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ</Text>
+        <Text style={styles.homeLinkText}>{t("ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ")}</Text>
       </TouchableOpacity>
     </View>
   );

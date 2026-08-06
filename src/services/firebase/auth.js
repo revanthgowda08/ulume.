@@ -1,5 +1,16 @@
 import { auth, firestore } from "./config";
 
+// NOTE: Real Firebase Phone Auth (SMS OTP) requires SHA-1/SHA-256 certificate
+// fingerprints registered in the Firebase console, tied to the exact signing
+// keystore the APK was built with. That doesn't work with an EAS-managed cloud
+// keystore without extra setup, so login here signs in anonymously and treats
+// the entered phone number as an unverified profile field instead. Swap this
+// back to sendOTP/verifyOTP (still below, unused) once real OTP is wired up.
+export const loginWithPhone = async (phoneNumber) => {
+  const credential = await auth().signInAnonymously();
+  return { user: credential.user, phoneNumber };
+};
+
 let confirmationResult = null;
 
 export const sendOTP = async (phoneNumber) => {

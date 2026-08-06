@@ -4,41 +4,43 @@ import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { formatRupees } from "../../utils/formatters";
 import { useAuthStore } from "../../store/authStore";
+import { useT } from "../../i18n/useT";
 
 export default function WalletScreen() {
   const user = useAuthStore((s) => s.user);
+  const t = useT();
 
   const handleShareReferral = () => {
     Share.share({
-      message: `ULUME ಬಳಸಿ, ರೈತರಿಗಾಗಿ ಮಾರುಕಟ್ಟೆ! ನನ್ನ ಕೋಡ್: ${user?.referralCode || ""} — ಬಳಸಿ ₹50 ಪಡೆಯಿರಿ.`,
+      message: `${t("ULUME ಬಳಸಿ, ರೈತರಿಗಾಗಿ ಮಾರುಕಟ್ಟೆ!")} ${t("ನನ್ನ ಕೋಡ್")}: ${user?.referralCode || ""} — ${t("ಬಳಸಿ ₹50 ಪಡೆಯಿರಿ.")}`,
     });
   };
 
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <Text style={styles.title}>ವ್ಯಾಲೆಟ್</Text>
+        <Text style={styles.title}>{t("ವ್ಯಾಲೆಟ್")}</Text>
       </View>
 
       <View style={styles.balanceCard}>
-        <Text style={styles.balanceLabel}>ನಿಮ್ಮ ಬ್ಯಾಲೆನ್ಸ್</Text>
+        <Text style={styles.balanceLabel}>{t("ನಿಮ್ಮ ಬ್ಯಾಲೆನ್ಸ್")}</Text>
         <Text style={styles.balanceValue}>{formatRupees(user?.walletBalance || 0)}</Text>
       </View>
 
       <View style={styles.referralCard}>
-        <Text style={styles.referralTitle}>🎁 ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ, ₹50 ಪಡೆಯಿರಿ</Text>
+        <Text style={styles.referralTitle}>🎁 {t("ಸ್ನೇಹಿತರನ್ನು ಆಹ್ವಾನಿಸಿ, ₹50 ಪಡೆಯಿರಿ")}</Text>
         <View style={styles.codeRow}>
           <Text style={styles.codeText}>{user?.referralCode || "—"}</Text>
         </View>
         <TouchableOpacity style={styles.shareBtn} onPress={handleShareReferral}>
-          <Text style={styles.shareBtnText}>📤 ಶೇರ್ ಮಾಡಿ</Text>
+          <Text style={styles.shareBtnText}>📤 {t("ಶೇರ್ ಮಾಡಿ")}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.statsRow}>
         <View style={styles.statBox}>
           <Text style={styles.statValue}>{user?.totalOrders || 0}</Text>
-          <Text style={styles.statLabel}>ಒಟ್ಟು ಆರ್ಡರ್</Text>
+          <Text style={styles.statLabel}>{t("ಒಟ್ಟು ಆರ್ಡರ್")}</Text>
         </View>
       </View>
     </View>

@@ -6,9 +6,11 @@ import { spacing } from "../../theme/spacing";
 import { useAuthStore } from "../../store/authStore";
 import { firestore } from "../../services/firebase/config";
 import { formatRupees, formatOrderDate } from "../../utils/formatters";
+import { useT } from "../../i18n/useT";
 
 export default function EarningsScreen({ navigation }) {
   const seller = useAuthStore((s) => s.seller);
+  const t = useT();
   const [settlements, setSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,23 +34,23 @@ export default function EarningsScreen({ navigation }) {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>ಆದಾಯ</Text>
+        <Text style={styles.title}>{t("ಆದಾಯ")}</Text>
       </View>
 
       <View style={styles.summaryCard}>
-        <Text style={styles.summaryLabel}>ಒಟ್ಟು GMV</Text>
+        <Text style={styles.summaryLabel}>{t("ಒಟ್ಟು GMV")}</Text>
         <Text style={styles.summaryValue}>{formatRupees(seller?.totalGmv || 0)}</Text>
-        <Text style={styles.summarySub}>{seller?.totalOrders || 0} ಆರ್ಡರ್‌ಗಳು</Text>
+        <Text style={styles.summarySub}>{seller?.totalOrders || 0} {t("ಆರ್ಡರ್‌ಗಳು")}</Text>
       </View>
 
       {pendingSettlement && (
         <View style={styles.pendingCard}>
-          <Text style={styles.pendingLabel}>ಮುಂದಿನ ಪಾವತಿ (ಸೋಮವಾರ)</Text>
+          <Text style={styles.pendingLabel}>{t("ಮುಂದಿನ ಪಾವತಿ (ಸೋಮವಾರ)")}</Text>
           <Text style={styles.pendingValue}>{formatRupees(pendingSettlement.netPayout)}</Text>
         </View>
       )}
 
-      <Text style={styles.sectionTitle}>ಪಾವತಿ ಇತಿಹಾಸ</Text>
+      <Text style={styles.sectionTitle}>{t("ಪಾವತಿ ಇತಿಹಾಸ")}</Text>
       {loading ? (
         <ActivityIndicator color={colors.primary} />
       ) : (
@@ -59,17 +61,17 @@ export default function EarningsScreen({ navigation }) {
             <View style={styles.row}>
               <View>
                 <Text style={styles.rowDate}>{formatOrderDate(item.weekStartDate)} – {formatOrderDate(item.weekEndDate)}</Text>
-                <Text style={styles.rowOrders}>{item.totalOrders} ಆರ್ಡರ್</Text>
+                <Text style={styles.rowOrders}>{item.totalOrders} {t("ಆರ್ಡರ್")}</Text>
               </View>
               <View style={styles.rowRight}>
                 <Text style={styles.rowPayout}>{formatRupees(item.netPayout)}</Text>
                 <Text style={[styles.rowStatus, item.status === "processed" && styles.rowStatusPaid]}>
-                  {item.status === "processed" ? "ಪಾವತಿ ಆಗಿದೆ" : "ಬಾಕಿ"}
+                  {item.status === "processed" ? t("ಪಾವತಿ ಆಗಿದೆ") : t("ಬಾಕಿ")}
                 </Text>
               </View>
             </View>
           )}
-          ListEmptyComponent={<Text style={styles.emptyText}>ಇನ್ನೂ ಯಾವುದೇ ಪಾವತಿ ಇಲ್ಲ</Text>}
+          ListEmptyComponent={<Text style={styles.emptyText}>{t("ಇನ್ನೂ ಯಾವುದೇ ಪಾವತಿ ಇಲ್ಲ")}</Text>}
         />
       )}
     </View>
