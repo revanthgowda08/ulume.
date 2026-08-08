@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
@@ -16,22 +16,31 @@ export default function MyCropsScreen({ navigation }) {
   const { user } = useAuthStore();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState(false);
+
+  const loadListings = useCallback(() => {
+    if (!user?.uid) return Promise.resolve();
+    setLoadError(false);
+    return getFarmerCropListings(user.uid)
+      .then(setListings)
+      .catch((error) => {
+        console.error("getFarmerCropListings failed:", error);
+        setLoadError(true);
+      });
+  }, [user?.uid]);
 
   useFocusEffect(
     useCallback(() => {
-      if (!user?.uid) return;
       setLoading(true);
-      setLoadError(false);
-      getFarmerCropListings(user.uid)
-        .then(setListings)
-        .catch((error) => {
-          console.error("getFarmerCropListings failed:", error);
-          setLoadError(true);
-        })
-        .finally(() => setLoading(false));
-    }, [user?.uid])
+      loadListings().finally(() => setLoading(false));
+    }, [loadListings])
   );
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    loadListings().finally(() => setRefreshing(false));
+  };
 
   return (
     <View style={styles.screen}>
@@ -58,6 +67,7 @@ export default function MyCropsScreen({ navigation }) {
           data={listings}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[colors.primary]} tintColor={colors.primary} />}
           renderItem={({ item }) => (
             <View style={styles.card}>
               <View style={{ flex: 1 }}>

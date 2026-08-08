@@ -14,6 +14,8 @@ const ROLES = [
   { key: "admin", icon: "🛡️", title: "Admin", subtitle: "Platform admin" },
 ];
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function SignupScreen({ navigation }) {
   const [role, setRole] = useState("farmer");
   const [name, setName] = useState("");
@@ -23,6 +25,7 @@ export default function SignupScreen({ navigation }) {
   const [state, setState] = useState("");
   const [district, setDistrict] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const setUser = useAuthStore((s) => s.setUser);
   const setSeller = useAuthStore((s) => s.setSeller);
@@ -40,15 +43,20 @@ export default function SignupScreen({ navigation }) {
     setRole(key);
   };
 
+  const validate = () => {
+    const next = {};
+    if (!name.trim()) next.name = "Enter your full name.";
+    if (!/^\d{10}$/.test(phone.trim())) next.phone = "Enter a 10-digit phone number.";
+    if (!EMAIL_RE.test(email.trim())) next.email = "Enter a valid email address.";
+    if (password.length < 6) next.password = "Password must be at least 6 characters.";
+    if (!state.trim()) next.state = "Enter your state.";
+    if (!district.trim()) next.district = "Enter your district.";
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
   const handleCreateAccount = async () => {
-    if (!name.trim() || !phone.trim() || !email.trim() || !password || !state.trim() || !district.trim()) {
-      Alert.alert("Missing info", "Please fill in every field.");
-      return;
-    }
-    if (password.length < 6) {
-      Alert.alert("Weak password", "Password must be at least 6 characters.");
-      return;
-    }
+    if (!validate()) return;
     setLoading(true);
     try {
       const firebaseUser = await signUpWithEmail(email.trim(), password);
@@ -104,28 +112,34 @@ export default function SignupScreen({ navigation }) {
       <View style={styles.row}>
         <View style={styles.col}>
           <Text style={styles.label}>Full Name</Text>
-          <TextInput style={styles.input} value={name} onChangeText={setName} placeholderTextColor={colors.textMuted} />
+          <TextInput style={[styles.input, errors.name && styles.inputError]} value={name} onChangeText={setName} placeholderTextColor={colors.textMuted} />
+          {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
         </View>
         <View style={styles.col}>
           <Text style={styles.label}>Phone</Text>
-          <TextInput style={styles.input} value={phone} onChangeText={setPhone} keyboardType="phone-pad" placeholderTextColor={colors.textMuted} />
+          <TextInput style={[styles.input, errors.phone && styles.inputError]} value={phone} onChangeText={setPhone} keyboardType="phone-pad" maxLength={10} placeholderTextColor={colors.textMuted} />
+          {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
         </View>
       </View>
 
       <Text style={styles.label}>Email</Text>
-      <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" placeholderTextColor={colors.textMuted} />
+      <TextInput style={[styles.input, errors.email && styles.inputError]} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" placeholderTextColor={colors.textMuted} />
+      {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
       <Text style={styles.label}>Password</Text>
-      <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry placeholderTextColor={colors.textMuted} />
+      <TextInput style={[styles.input, errors.password && styles.inputError]} value={password} onChangeText={setPassword} secureTextEntry placeholderTextColor={colors.textMuted} />
+      {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
       <View style={styles.row}>
         <View style={styles.col}>
           <Text style={styles.label}>State</Text>
-          <TextInput style={styles.input} value={state} onChangeText={setState} placeholderTextColor={colors.textMuted} />
+          <TextInput style={[styles.input, errors.state && styles.inputError]} value={state} onChangeText={setState} placeholderTextColor={colors.textMuted} />
+          {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
         </View>
         <View style={styles.col}>
           <Text style={styles.label}>District</Text>
-          <TextInput style={styles.input} value={district} onChangeText={setDistrict} placeholderTextColor={colors.textMuted} />
+          <TextInput style={[styles.input, errors.district && styles.inputError]} value={district} onChangeText={setDistrict} placeholderTextColor={colors.textMuted} />
+          {errors.district && <Text style={styles.errorText}>{errors.district}</Text>}
         </View>
       </View>
 
@@ -163,6 +177,8 @@ const styles = StyleSheet.create({
   col: { flex: 1 },
   label: { ...typography.caption, color: colors.textPrimary, fontWeight: "600", marginTop: spacing.md, marginBottom: spacing.xs },
   input: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, padding: spacing.md, backgroundColor: colors.white, ...typography.body, color: colors.textPrimary },
+  inputError: { borderColor: colors.error },
+  errorText: { ...typography.caption, color: colors.error, marginTop: 4 },
   submitBtn: { backgroundColor: colors.primary, borderRadius: spacing.buttonRadius, paddingVertical: spacing.md, alignItems: "center", marginTop: spacing.xl, minHeight: spacing.minTouchTarget, justifyContent: "center" },
   submitBtnText: { color: colors.white, fontWeight: "700", fontSize: 16 },
   loginLink: { alignItems: "center", marginTop: spacing.lg, minHeight: spacing.minTouchTarget, justifyContent: "center" },

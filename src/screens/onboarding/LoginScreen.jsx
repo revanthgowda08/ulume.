@@ -1,27 +1,35 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { loginWithEmail } from "../../services/firebase/auth";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password) {
-      Alert.alert("Missing info", "Enter your email and password.");
+    if (!EMAIL_RE.test(email.trim())) {
+      setError("Enter a valid email address.");
       return;
     }
+    if (!password) {
+      setError("Enter your password.");
+      return;
+    }
+    setError(null);
     setLoading(true);
     try {
       await loginWithEmail(email.trim(), password);
       // AppNavigator's onAuthStateChanged listener picks this up and routes
       // to the right dashboard once it loads the matching profile.
     } catch (e) {
-      Alert.alert("Login failed", "Invalid email or password.");
+      setError("Invalid email or password.");
     } finally {
       setLoading(false);
     }
@@ -31,6 +39,12 @@ export default function LoginScreen({ navigation }) {
     <View style={styles.screen}>
       <Text style={styles.title}>Welcome back</Text>
       <Text style={styles.subtitle}>Sign in to continue.</Text>
+
+      {error && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorBannerText}>{error}</Text>
+        </View>
+      )}
 
       <Text style={styles.label}>Email</Text>
       <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" placeholderTextColor={colors.textMuted} />
@@ -53,6 +67,8 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background, padding: spacing.screenPadding, justifyContent: "center" },
   title: { ...typography.h2, color: colors.textPrimary },
   subtitle: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs, marginBottom: spacing.lg },
+  errorBanner: { backgroundColor: "#FDECEA", padding: spacing.md, borderRadius: spacing.cardRadius, marginBottom: spacing.md },
+  errorBannerText: { ...typography.caption, color: colors.error },
   label: { ...typography.caption, color: colors.textPrimary, fontWeight: "600", marginTop: spacing.md, marginBottom: spacing.xs },
   input: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, padding: spacing.md, backgroundColor: colors.white, ...typography.body, color: colors.textPrimary },
   submitBtn: { backgroundColor: colors.primary, borderRadius: spacing.buttonRadius, paddingVertical: spacing.md, alignItems: "center", marginTop: spacing.xl, minHeight: spacing.minTouchTarget, justifyContent: "center" },

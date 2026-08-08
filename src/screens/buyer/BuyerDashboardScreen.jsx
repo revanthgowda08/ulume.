@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl } from "react-native";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
@@ -21,19 +21,28 @@ export default function BuyerDashboardScreen({ navigation }) {
   const [tab, setTab] = useState("Procurement");
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState(false);
 
-  useEffect(() => {
-    if (!buyer?.uid) return;
+  const loadRequests = useCallback(() => {
+    if (!buyer?.uid) return Promise.resolve();
     setLoadError(false);
-    getBuyerProcurementRequests(buyer.uid)
+    return getBuyerProcurementRequests(buyer.uid)
       .then(setRequests)
       .catch((error) => {
         console.error("getBuyerProcurementRequests failed:", error);
         setLoadError(true);
-      })
-      .finally(() => setLoading(false));
+      });
   }, [buyer?.uid]);
+
+  useEffect(() => {
+    loadRequests().finally(() => setLoading(false));
+  }, [loadRequests]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    loadRequests().finally(() => setRefreshing(false));
+  };
 
   const savedFarmerIds = buyer?.savedFarmerIds || [];
 
@@ -94,6 +103,7 @@ export default function BuyerDashboardScreen({ navigation }) {
             <FlatList
               data={requests}
               keyExtractor={(item) => item.id}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[colors.primary]} tintColor={colors.primary} />}
               renderItem={({ item }) => (
                 <View style={styles.requestCard}>
                   <View style={{ flex: 1 }}>

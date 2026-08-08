@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl } from "react-native";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
@@ -23,6 +23,14 @@ export default function SellerDashboardScreen({ navigation }) {
   const [pendingOrders, setPendingOrders] = useState([]);
   const [allOrders, setAllOrders] = useState([]);
   const [loadError, setLoadError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadOrders = useCallback(() => {
+    if (!seller?.uid) return Promise.resolve();
+    return getSellerOrders(seller.uid)
+      .then(({ orders }) => setAllOrders(orders))
+      .catch((error) => setLoadError(error.message));
+  }, [seller?.uid]);
 
   useEffect(() => {
     if (!seller?.uid) return;
@@ -30,11 +38,15 @@ export default function SellerDashboardScreen({ navigation }) {
     const unsubscribe = listenToSellerPendingOrders(seller.uid, setPendingOrders, (error) =>
       setLoadError(error.message)
     );
-    getSellerOrders(seller.uid)
-      .then(({ orders }) => setAllOrders(orders))
-      .catch((error) => setLoadError(error.message));
+    loadOrders();
     return unsubscribe;
-  }, [seller?.uid]);
+  }, [seller?.uid, loadOrders]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    setLoadError(null);
+    loadOrders().finally(() => setRefreshing(false));
+  };
 
   const todayOrders = allOrders.filter((o) => isToday(o.createdAt));
   const todayGmv = todayOrders.reduce((sum, o) => sum + (o.total || 0), 0);
@@ -97,6 +109,7 @@ export default function SellerDashboardScreen({ navigation }) {
         data={allOrders}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[colors.primary]} tintColor={colors.primary} />}
         ListHeaderComponent={
           pendingOrders.length > 0 && (
             <View style={styles.pendingSection}>
