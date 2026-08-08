@@ -8,6 +8,7 @@ import { listenToSellerPendingOrders, getSellerOrders, updateOrderStatus } from 
 import { formatRupees, formatOrderDate, getOrderStatusLabel } from "../../utils/formatters";
 import { useAppStore } from "../../store/appStore";
 import { useT } from "../../i18n/useT";
+import SalesTrendChart from "../../components/SalesTrendChart";
 
 const isToday = (timestamp) => {
   const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -83,6 +84,8 @@ export default function SellerDashboardScreen({ navigation }) {
           <Text style={styles.statLabel}>{t("ಬಾಕಿ")}</Text>
         </View>
       </View>
+
+      <SalesTrendChart orders={allOrders} />
 
       {loadError && (
         <View style={styles.errorBox}>

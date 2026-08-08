@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const useAppStore = create(
   persist(
     (set) => ({
-      language: "kn",
+      language: "en",
       district: null,
       location: null,
       setLanguage: (l) => set({ language: l }),

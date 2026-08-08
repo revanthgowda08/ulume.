@@ -16,18 +16,20 @@ const LANGUAGES = [
   { code: "te", label: "తెలుగు" },
 ];
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const { user, setUser, clearAuth } = useAuthStore();
   const { language, setLanguage } = useAppStore();
   const [name, setName] = useState(user?.name || "");
   const [village, setVillage] = useState(user?.village || "");
+  const [state, setState] = useState(user?.state || "");
+  const [district, setDistrict] = useState(user?.district || "");
   const [saving, setSaving] = useState(false);
   const t = useT();
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const updated = await createFarmerProfile(user.uid, { name, village });
+      const updated = await createFarmerProfile(user.uid, { name, village, state, district });
       setUser({ ...user, ...updated });
       Alert.alert(t("ಯಶಸ್ಸು"), t("ಪ್ರೊಫೈಲ್ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ"));
     } finally {
@@ -56,6 +58,23 @@ export default function ProfileScreen() {
 
       <Text style={styles.label}>{t("ಗ್ರಾಮ")}</Text>
       <TextInput style={styles.input} value={village} onChangeText={setVillage} placeholder={t("ನಿಮ್ಮ ಗ್ರಾಮ")} placeholderTextColor={colors.textMuted} />
+
+      <Text style={styles.label}>State</Text>
+      <TextInput style={styles.input} value={state} onChangeText={setState} placeholder="e.g. Karnataka" placeholderTextColor={colors.textMuted} />
+
+      <Text style={styles.label}>District</Text>
+      <TextInput style={styles.input} value={district} onChangeText={setDistrict} placeholder="e.g. Mysuru" placeholderTextColor={colors.textMuted} />
+
+      <View style={styles.quickLinksRow}>
+        <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate("MyCrops")}>
+          <Text style={styles.quickLinkIcon}>🌾</Text>
+          <Text style={styles.quickLinkText}>My Crops</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.quickLink} onPress={() => navigation.navigate("BuyerLeads")}>
+          <Text style={styles.quickLinkIcon}>🤝</Text>
+          <Text style={styles.quickLinkText}>Buyer Leads</Text>
+        </TouchableOpacity>
+      </View>
 
       <Text style={styles.label}>{t("ಭಾಷೆ")}</Text>
       <View style={styles.langRow}>
@@ -89,6 +108,10 @@ const styles = StyleSheet.create({
   phone: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs },
   label: { ...typography.caption, color: colors.textMuted, marginBottom: spacing.xs, marginTop: spacing.md },
   input: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, padding: spacing.md, ...typography.body, color: colors.textPrimary },
+  quickLinksRow: { flexDirection: "row", gap: spacing.sm, marginTop: spacing.lg },
+  quickLink: { flex: 1, flexDirection: "row", alignItems: "center", gap: spacing.xs, backgroundColor: colors.primaryLight, borderRadius: spacing.buttonRadius, padding: spacing.md, justifyContent: "center" },
+  quickLinkIcon: { fontSize: 18 },
+  quickLinkText: { ...typography.caption, color: colors.primary, fontWeight: "700" },
   langRow: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm },
   langChip: { borderWidth: 1, borderColor: colors.border, borderRadius: 20, paddingHorizontal: spacing.md, paddingVertical: spacing.sm },
   langChipActive: { backgroundColor: colors.primaryLight, borderColor: colors.primaryMid },

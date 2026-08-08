@@ -12,7 +12,7 @@ export const en = {
   "ದೋಷ": "Error",
   "ಲಾಗಿನ್ ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.": "Couldn't log in. Please try again.",
   "ರೈತ": "Farmer",
-  "ಮಾರಾಟಗಾರ": "Seller",
+  "ಮಾರಾಟಗಾರ": "Vendor",
   "ಮುಂದುವರಿಸಿ": "Continue",
 
   // --- VoiceButton ---
@@ -97,7 +97,7 @@ export const en = {
   // --- OrderTrackingScreen ---
   "ಅಂದಾಜು ಡೆಲಿವರಿ": "Estimated delivery",
   "ಆರ್ಡರ್ ವಿವರ": "Order details",
-  "ಮಾರಾಟಗಾರರಿಗೆ ಕರೆ ಮಾಡಿ": "Call the seller",
+  "ಮಾರಾಟಗಾರರಿಗೆ ಕರೆ ಮಾಡಿ": "Call the vendor",
   "ವಾಪಸ್ ವಿನಂತಿ": "Return request",
   "ನಿಮ್ಮ ವಿನಂತಿ ಸ್ವೀಕರಿಸಲಾಗಿದೆ. ನಾವು ಶೀಘ್ರದಲ್ಲಿ ಸಂಪರ್ಕಿಸುತ್ತೇವೆ.": "Your request has been received. We'll contact you shortly.",
   "ತಪ್ಪಾದ ಸಾಮಾನು?": "Wrong item?",

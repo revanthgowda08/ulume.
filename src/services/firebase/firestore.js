@@ -163,4 +163,102 @@ export const getSellerProducts = async (sellerId, cursor = null) => {
   return { products, nextCursor };
 };
 
+// --- Crop listings (farmer sells harvest to buyers) ---
+
+export const createCropListing = async (listingData) => {
+  const ref = await firestore().collection("cropListings").add({
+    status: "active",
+    createdAt: firestore.FieldValue.serverTimestamp(),
+    ...listingData,
+  });
+  return ref.id;
+};
+
+export const getFarmerCropListings = async (farmerId) => {
+  const snap = await firestore()
+    .collection("cropListings")
+    .where("farmerId", "==", farmerId)
+    .orderBy("createdAt", "desc")
+    .get();
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+};
+
+export const searchCropListings = async ({ cropName = null, state = null, isOrganic = null } = {}) => {
+  let query = firestore().collection("cropListings").where("status", "==", "active");
+  if (cropName) query = query.where("cropName", "==", cropName);
+  if (state) query = query.where("state", "==", state);
+  if (isOrganic) query = query.where("isOrganic", "==", true);
+  const snap = await query.orderBy("createdAt", "desc").limit(PAGE_SIZE).get();
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+};
+
+// --- Procurement requests (buyer <-> farmer) ---
+
+export const createProcurementRequest = async (requestData) => {
+  const ref = await firestore().collection("procurementRequests").add({
+    status: "pending",
+    createdAt: firestore.FieldValue.serverTimestamp(),
+    ...requestData,
+  });
+  return ref.id;
+};
+
+export const getBuyerProcurementRequests = async (buyerId) => {
+  const snap = await firestore()
+    .collection("procurementRequests")
+    .where("buyerId", "==", buyerId)
+    .orderBy("createdAt", "desc")
+    .get();
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+};
+
+export const listenToFarmerProcurementRequests = (farmerId, callback, onError) =>
+  firestore()
+    .collection("procurementRequests")
+    .where("farmerId", "==", farmerId)
+    .orderBy("createdAt", "desc")
+    .onSnapshot(
+      (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (error) => {
+        console.error("listenToFarmerProcurementRequests failed:", error);
+        onError?.(error);
+      }
+    );
+
+export const updateProcurementRequestStatus = async (requestId, status) => {
+  await firestore().collection("procurementRequests").doc(requestId).update({ status });
+};
+
+// --- Buyers ---
+
+export const searchFarmersByCrop = async ({ cropName = null, state = null } = {}) => {
+  // Farmers are discovered via their active crop listings, then de-duplicated.
+  const listings = await searchCropListings({ cropName, state });
+  const byFarmer = new Map();
+  listings.forEach((listing) => {
+    if (!byFarmer.has(listing.farmerId)) {
+      byFarmer.set(listing.farmerId, {
+        farmerId: listing.farmerId,
+        farmerName: listing.farmerName,
+        state: listing.state,
+        district: listing.district,
+        listings: [],
+      });
+    }
+    byFarmer.get(listing.farmerId).listings.push(listing);
+  });
+  return [...byFarmer.values()];
+};
+
+export const toggleSavedFarmer = async (buyerId, farmerId, isSaved) => {
+  await firestore()
+    .collection("buyers")
+    .doc(buyerId)
+    .update({
+      savedFarmerIds: isSaved
+        ? firestore.FieldValue.arrayRemove(farmerId)
+        : firestore.FieldValue.arrayUnion(farmerId),
+    });
+};
+
 export { PAGE_SIZE };

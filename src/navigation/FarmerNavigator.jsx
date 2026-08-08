@@ -13,6 +13,9 @@ import OrderTrackingScreen from "../screens/farmer/OrderTrackingScreen";
 import OrderHistoryScreen from "../screens/farmer/OrderHistoryScreen";
 import WalletScreen from "../screens/farmer/WalletScreen";
 import ProfileScreen from "../screens/farmer/ProfileScreen";
+import MyCropsScreen from "../screens/farmer/MyCropsScreen";
+import AddCropListingScreen from "../screens/farmer/AddCropListingScreen";
+import BuyerLeadsScreen from "../screens/farmer/BuyerLeadsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -26,6 +29,9 @@ const sharedStackScreens = (StackNav) => (
     <StackNav.Screen name="Checkout" component={CheckoutScreen} />
     <StackNav.Screen name="OrderConfirm" component={OrderConfirmScreen} />
     <StackNav.Screen name="OrderTracking" component={OrderTrackingScreen} />
+    <StackNav.Screen name="MyCrops" component={MyCropsScreen} />
+    <StackNav.Screen name="AddCropListing" component={AddCropListingScreen} />
+    <StackNav.Screen name="BuyerLeads" component={BuyerLeadsScreen} />
   </>
 );
 
@@ -72,6 +78,9 @@ function ProfileStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileMain" component={ProfileScreen} />
+      <Stack.Screen name="MyCrops" component={MyCropsScreen} />
+      <Stack.Screen name="AddCropListing" component={AddCropListingScreen} />
+      <Stack.Screen name="BuyerLeads" component={BuyerLeadsScreen} />
     </Stack.Navigator>
   );
 }

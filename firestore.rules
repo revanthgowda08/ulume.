@@ -54,6 +54,28 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // --- Buyers ---
+    match /buyers/{buyerId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin() || (isSignedIn() && request.auth.uid == buyerId);
+    }
+
+    // --- Crop listings (farmer sells harvest) ---
+    match /cropListings/{listingId} {
+      allow read: if isSignedIn();
+      allow create: if isAdmin() || (isSignedIn() && request.resource.data.farmerId == request.auth.uid);
+      allow update, delete: if isAdmin() || (isSignedIn() && resource.data.farmerId == request.auth.uid);
+    }
+
+    // --- Procurement requests (buyer <-> farmer) ---
+    match /procurementRequests/{requestId} {
+      allow read: if isAdmin() ||
+        (isSignedIn() && (resource.data.farmerId == request.auth.uid || resource.data.buyerId == request.auth.uid));
+      allow create: if isAdmin() || (isSignedIn() && request.resource.data.buyerId == request.auth.uid);
+      allow update: if isAdmin() ||
+        (isSignedIn() && (resource.data.farmerId == request.auth.uid || resource.data.buyerId == request.auth.uid));
+    }
+
     // --- Order ID counters ---
     // Any signed-in user may bump the sequence via the transaction in
     // placeOrder() (src/services/firebase/firestore.js). The counter only

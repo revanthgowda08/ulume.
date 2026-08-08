@@ -1,27 +1,17 @@
 import { auth, firestore } from "./config";
 
-// NOTE: Real Firebase Phone Auth (SMS OTP) requires SHA-1/SHA-256 certificate
-// fingerprints registered in the Firebase console, tied to the exact signing
-// keystore the APK was built with. That doesn't work with an EAS-managed cloud
-// keystore without extra setup, so login here signs in anonymously and treats
-// the entered phone number as an unverified profile field instead. Swap this
-// back to sendOTP/verifyOTP (still below, unused) once real OTP is wired up.
-export const loginWithPhone = async (phoneNumber) => {
-  const credential = await auth().signInAnonymously();
-  return { user: credential.user, phoneNumber };
+// Email/password auth, matching ulume.shop's signup form (Name, Phone, Email,
+// Password, State, District + role picker). Real Firebase Phone Auth (SMS
+// OTP) needs SHA-1/SHA-256 certificate fingerprints tied to the exact signing
+// keystore, which isn't practical with an EAS-managed cloud keystore — so
+// phone number is stored as a plain (unverified) profile field instead.
+export const signUpWithEmail = async (email, password) => {
+  const credential = await auth().createUserWithEmailAndPassword(email, password);
+  return credential.user;
 };
 
-let confirmationResult = null;
-
-export const sendOTP = async (phoneNumber) => {
-  // phoneNumber must be E.164, e.g. +91XXXXXXXXXX
-  confirmationResult = await auth().signInWithPhoneNumber(phoneNumber);
-  return confirmationResult;
-};
-
-export const verifyOTP = async (code) => {
-  if (!confirmationResult) throw new Error("NO_OTP_REQUEST_IN_PROGRESS");
-  const credential = await confirmationResult.confirm(code);
+export const loginWithEmail = async (email, password) => {
+  const credential = await auth().signInWithEmailAndPassword(email, password);
   return credential.user;
 };
 
@@ -32,6 +22,11 @@ export const getFarmerProfile = async (uid) => {
 
 export const getSellerProfile = async (uid) => {
   const doc = await firestore().collection("sellers").doc(uid).get();
+  return doc.exists ? { id: doc.id, ...doc.data() } : null;
+};
+
+export const getBuyerProfile = async (uid) => {
+  const doc = await firestore().collection("buyers").doc(uid).get();
   return doc.exists ? { id: doc.id, ...doc.data() } : null;
 };
 
@@ -63,6 +58,19 @@ export const createSellerProfile = async (uid, data) => {
     ...data,
   };
   await firestore().collection("sellers").doc(uid).set(payload, { merge: true });
+  return payload;
+};
+
+export const createBuyerProfile = async (uid, data) => {
+  const payload = {
+    uid,
+    savedFarmerIds: [],
+    totalOrders: 0,
+    isActive: true,
+    createdAt: firestore.FieldValue.serverTimestamp(),
+    ...data,
+  };
+  await firestore().collection("buyers").doc(uid).set(payload, { merge: true });
   return payload;
 };
 
