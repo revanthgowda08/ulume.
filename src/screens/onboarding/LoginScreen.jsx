@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView, Alert } from "react-native";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
@@ -7,25 +7,27 @@ import { loginWithEmail } from "../../services/firebase/auth";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Matches scripts/seedDemoAccounts.js — run `npm run seed:demo` once against
+// this Firebase project to create these accounts before the buttons work.
+const DEMO_ACCOUNTS = [
+  { role: "Farmer", email: "farmer1@ulume.com" },
+  { role: "Buyer", email: "buyer@ulume.com" },
+  { role: "Vendor", email: "vendor@ulume.com" },
+  { role: "Admin", email: "admin@ulume.com" },
+];
+const DEMO_PASSWORD = "Demo@1234";
+
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleLogin = async () => {
-    if (!EMAIL_RE.test(email.trim())) {
-      setError("Enter a valid email address.");
-      return;
-    }
-    if (!password) {
-      setError("Enter your password.");
-      return;
-    }
+  const attemptLogin = async (loginEmail, loginPassword) => {
     setError(null);
     setLoading(true);
     try {
-      await loginWithEmail(email.trim(), password);
+      await loginWithEmail(loginEmail.trim(), loginPassword);
       // AppNavigator's onAuthStateChanged listener picks this up and routes
       // to the right dashboard once it loads the matching profile.
     } catch (e) {
@@ -35,8 +37,33 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  const handleLogin = () => {
+    if (!EMAIL_RE.test(email.trim())) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    if (!password) {
+      setError("Enter your password.");
+      return;
+    }
+    attemptLogin(email, password);
+  };
+
+  const handleDemoLogin = (demo) => {
+    if (demo.role === "Admin") {
+      Alert.alert(
+        "Admin dashboard",
+        "Admin tools (user verification, product approval) live in the ULUME web admin panel, not this app."
+      );
+      return;
+    }
+    setEmail(demo.email);
+    setPassword(DEMO_PASSWORD);
+    attemptLogin(demo.email, DEMO_PASSWORD);
+  };
+
   return (
-    <View style={styles.screen}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Welcome back</Text>
       <Text style={styles.subtitle}>Sign in to continue.</Text>
 
@@ -56,15 +83,30 @@ export default function LoginScreen({ navigation }) {
         {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.submitBtnText}>Sign In</Text>}
       </TouchableOpacity>
 
+      <Text style={styles.demoLabel}>Try a demo account:</Text>
+      <View style={styles.demoGrid}>
+        {DEMO_ACCOUNTS.map((demo) => (
+          <TouchableOpacity
+            key={demo.role}
+            style={styles.demoBtn}
+            onPress={() => handleDemoLogin(demo)}
+            disabled={loading}
+          >
+            <Text style={styles.demoBtnText}>{demo.role}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
       <TouchableOpacity style={styles.signupLink} onPress={() => navigation.navigate("Signup")}>
         <Text style={styles.signupLinkText}>Don't have an account? Create one</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background, padding: spacing.screenPadding, justifyContent: "center" },
+  screen: { flex: 1, backgroundColor: colors.background },
+  content: { padding: spacing.screenPadding, paddingTop: spacing.xl * 1.5, paddingBottom: spacing.xl },
   title: { ...typography.h2, color: colors.textPrimary },
   subtitle: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs, marginBottom: spacing.lg },
   errorBanner: { backgroundColor: "#FDECEA", padding: spacing.md, borderRadius: spacing.cardRadius, marginBottom: spacing.md },
@@ -73,6 +115,10 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, padding: spacing.md, backgroundColor: colors.white, ...typography.body, color: colors.textPrimary },
   submitBtn: { backgroundColor: colors.primary, borderRadius: spacing.buttonRadius, paddingVertical: spacing.md, alignItems: "center", marginTop: spacing.xl, minHeight: spacing.minTouchTarget, justifyContent: "center" },
   submitBtnText: { color: colors.white, fontWeight: "700", fontSize: 16 },
+  demoLabel: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xl, marginBottom: spacing.sm, textAlign: "center" },
+  demoGrid: { flexDirection: "row", flexWrap: "wrap", gap: spacing.sm, justifyContent: "space-between" },
+  demoBtn: { width: "48%", borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, paddingVertical: spacing.sm, alignItems: "center", backgroundColor: colors.white, minHeight: spacing.minTouchTarget - 8, justifyContent: "center" },
+  demoBtnText: { ...typography.body, color: colors.textPrimary, fontWeight: "600" },
   signupLink: { alignItems: "center", marginTop: spacing.lg, minHeight: spacing.minTouchTarget, justifyContent: "center" },
   signupLinkText: { ...typography.body, color: colors.primaryMid, fontWeight: "600" },
 });

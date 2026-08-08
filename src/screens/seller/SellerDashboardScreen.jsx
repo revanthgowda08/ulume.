@@ -1,29 +1,41 @@
 import { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl, ActivityIndicator } from "react-native";
+import LazyImage from "../../components/LazyImage";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { useAuthStore } from "../../store/authStore";
-import { listenToSellerPendingOrders, getSellerOrders, updateOrderStatus } from "../../services/firebase/firestore";
+import {
+  listenToSellerPendingOrders,
+  getSellerOrders,
+  updateOrderStatus,
+  getSellerProducts,
+  deleteProduct,
+} from "../../services/firebase/firestore";
 import { formatRupees, formatOrderDate, getOrderStatusLabel } from "../../utils/formatters";
 import { useAppStore } from "../../store/appStore";
 import { useT } from "../../i18n/useT";
+import { signOutUser } from "../../services/firebase/auth";
 import SalesTrendChart from "../../components/SalesTrendChart";
+import AddProductScreen from "./AddProductScreen";
 
-const isToday = (timestamp) => {
-  const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
-  const now = new Date();
-  return date.toDateString() === now.toDateString();
-};
+const TABS = ["Products", "Orders", "Add Product"];
 
 export default function SellerDashboardScreen({ navigation }) {
   const seller = useAuthStore((s) => s.seller);
+  const { clearAuth } = useAuthStore();
   const language = useAppStore((s) => s.language);
   const t = useT();
+  const [tab, setTab] = useState("Products");
+
   const [pendingOrders, setPendingOrders] = useState([]);
   const [allOrders, setAllOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   const loadOrders = useCallback(() => {
     if (!seller?.uid) return Promise.resolve();
@@ -32,24 +44,32 @@ export default function SellerDashboardScreen({ navigation }) {
       .catch((error) => setLoadError(error.message));
   }, [seller?.uid]);
 
+  const loadProducts = useCallback(() => {
+    if (!seller?.uid) return Promise.resolve();
+    return getSellerProducts(seller.uid)
+      .then(({ products: page }) => setProducts(page))
+      .catch((error) => console.error("getSellerProducts failed:", error));
+  }, [seller?.uid]);
+
   useEffect(() => {
     if (!seller?.uid) return;
     setLoadError(null);
     const unsubscribe = listenToSellerPendingOrders(seller.uid, setPendingOrders, (error) =>
       setLoadError(error.message)
     );
-    loadOrders();
+    loadOrders().finally(() => setOrdersLoading(false));
+    loadProducts().finally(() => setProductsLoading(false));
     return unsubscribe;
-  }, [seller?.uid, loadOrders]);
+  }, [seller?.uid, loadOrders, loadProducts]);
 
   const handleRefresh = () => {
     setRefreshing(true);
     setLoadError(null);
-    loadOrders().finally(() => setRefreshing(false));
+    Promise.all([loadOrders(), loadProducts()]).finally(() => setRefreshing(false));
   };
 
-  const todayOrders = allOrders.filter((o) => isToday(o.createdAt));
-  const todayGmv = todayOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const totalSales = allOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const unitsSold = allOrders.reduce((sum, o) => sum + (o.items?.reduce((s, i) => s + (i.quantity || 0), 0) || 0), 0);
 
   const handleConfirm = async (orderId) => {
     await updateOrderStatus(orderId, "confirmed", "seller");
@@ -62,112 +82,173 @@ export default function SellerDashboardScreen({ navigation }) {
     ]);
   };
 
+  const handleDeleteProduct = (product) => {
+    Alert.alert("Remove product", `Remove "${product.nameKannada || product.name}" from your catalog?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Remove",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await deleteProduct(product.id);
+            setProducts((prev) => prev.filter((p) => p.id !== product.id));
+          } catch (e) {
+            Alert.alert("Error", "Couldn't remove the product. Please try again.");
+          }
+        },
+      },
+    ]);
+  };
+
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-        <View>
-          <View style={styles.shopNameRow}>
-            <Text style={styles.shopName}>{seller?.shopNameKannada || seller?.shopName}</Text>
-            {seller?.isVerified && <Text style={styles.verified}>✓</Text>}
-            <View style={styles.liveDot} />
-          </View>
-        </View>
-        <View style={styles.headerActions}>
-          <TouchableOpacity onPress={() => navigation.navigate("ProductList")} style={styles.headerBtn}>
-            <Text style={styles.headerBtnText}>📦</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("Earnings")} style={styles.headerBtn}>
-            <Text style={styles.headerBtnText}>💰</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.headerTitle}>ULUME</Text>
+        <TouchableOpacity onPress={async () => { await signOutUser(); clearAuth(); }}>
+          <Text style={styles.logout}>Logout</Text>
+        </TouchableOpacity>
       </View>
-
-      <View style={styles.statsRow}>
-        <View style={styles.statBox}>
-          <Text style={styles.statValue}>{todayOrders.length}</Text>
-          <Text style={styles.statLabel}>{t("ಇಂದಿನ ಆರ್ಡರ್")}</Text>
-        </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statValue}>{formatRupees(todayGmv)}</Text>
-          <Text style={styles.statLabel}>{t("ಇಂದಿನ GMV")}</Text>
-        </View>
-        <View style={styles.statBox}>
-          <Text style={[styles.statValue, pendingOrders.length > 0 && styles.statValueAlert]}>{pendingOrders.length}</Text>
-          <Text style={styles.statLabel}>{t("ಬಾಕಿ")}</Text>
-        </View>
-      </View>
-
-      <SalesTrendChart orders={allOrders} />
-
-      {loadError && (
-        <View style={styles.errorBox}>
-          <Text style={styles.errorText}>⚠️ {loadError}</Text>
-        </View>
-      )}
 
       <FlatList
-        data={allOrders}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.list}
+        style={styles.body}
+        contentContainerStyle={{ padding: spacing.screenPadding, paddingBottom: spacing.xl }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[colors.primary]} tintColor={colors.primary} />}
+        data={tab === "Products" ? products : tab === "Orders" ? allOrders : []}
+        keyExtractor={(item) => item.id}
         ListHeaderComponent={
-          pendingOrders.length > 0 && (
-            <View style={styles.pendingSection}>
-              <Text style={styles.sectionTitle}>{t("ಬಾಕಿ ಇರುವ ಆರ್ಡರ್‌ಗಳು")}</Text>
-              {pendingOrders.map((order) => (
-                <View key={order.id} style={styles.pendingCard}>
-                  <Text style={styles.farmerName}>{order.farmerName || order.farmerPhone}</Text>
-                  <Text style={styles.village}>{order.farmerAddress}</Text>
-                  <Text style={styles.itemsSummary}>{order.items?.length || 0} ಐಟಂ · {formatRupees(order.total)}</Text>
-                  <View style={styles.actionRow}>
-                    <TouchableOpacity style={styles.confirmBtn} onPress={() => handleConfirm(order.orderId)}>
-                      <Text style={styles.confirmBtnText}>✓ CONFIRM</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.rejectBtn} onPress={() => handleReject(order.orderId)}>
-                      <Text style={styles.rejectBtnText}>✕ REJECT</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+          <View>
+            <View style={styles.titleRow}>
+              <Text style={styles.title}>Vendor Dashboard</Text>
+              {seller?.isVerified && <Text style={styles.verified}>✓</Text>}
+            </View>
+            <Text style={styles.subtitle}>Manage your catalog, inventory, and sales.</Text>
+
+            {loadError && (
+              <View style={styles.errorBox}>
+                <Text style={styles.errorText}>⚠️ {loadError}</Text>
+              </View>
+            )}
+
+            <View style={styles.statsRow}>
+              <View style={styles.statBox}>
+                <Text style={styles.statIcon}>₹</Text>
+                <Text style={styles.statValue}>{formatRupees(totalSales)}</Text>
+                <Text style={styles.statLabel}>Total Sales</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={styles.statIcon}>📦</Text>
+                <Text style={styles.statValue}>{unitsSold}</Text>
+                <Text style={styles.statLabel}>Units Sold</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={styles.statIcon}>📈</Text>
+                <Text style={styles.statValue}>{allOrders.length}</Text>
+                <Text style={styles.statLabel}>Orders</Text>
+              </View>
+            </View>
+
+            <SalesTrendChart orders={allOrders} />
+
+            <View style={styles.tabRow}>
+              {TABS.map((tb) => (
+                <TouchableOpacity key={tb} style={[styles.tab, tab === tb && styles.tabActive]} onPress={() => setTab(tb)}>
+                  <Text style={[styles.tabText, tab === tb && styles.tabTextActive]}>{tb}</Text>
+                </TouchableOpacity>
               ))}
-              <Text style={styles.sectionTitle}>{t("ಎಲ್ಲಾ ಆರ್ಡರ್‌ಗಳು")}</Text>
             </View>
-          )
+
+            {tab === "Products" && productsLoading && <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.lg }} />}
+
+            {tab === "Orders" && pendingOrders.length > 0 && (
+              <View style={styles.pendingSection}>
+                <Text style={styles.sectionTitle}>{t("ಬಾಕಿ ಇರುವ ಆರ್ಡರ್‌ಗಳು")}</Text>
+                {pendingOrders.map((order) => (
+                  <View key={order.id} style={styles.pendingCard}>
+                    <Text style={styles.farmerName}>{order.farmerName || order.farmerPhone}</Text>
+                    <Text style={styles.village}>{order.farmerAddress}</Text>
+                    <Text style={styles.itemsSummary}>{order.items?.length || 0} ಐಟಂ · {formatRupees(order.total)}</Text>
+                    <View style={styles.actionRow}>
+                      <TouchableOpacity style={styles.confirmBtn} onPress={() => handleConfirm(order.orderId)}>
+                        <Text style={styles.confirmBtnText}>✓ CONFIRM</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.rejectBtn} onPress={() => handleReject(order.orderId)}>
+                        <Text style={styles.rejectBtnText}>✕ REJECT</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+                <Text style={styles.sectionTitle}>{t("ಎಲ್ಲಾ ಆರ್ಡರ್‌ಗಳು")}</Text>
+              </View>
+            )}
+
+            {tab === "Orders" && ordersLoading && <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.lg }} />}
+
+            {tab === "Add Product" && <AddProductScreen navigation={navigation} />}
+          </View>
         }
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.orderRow} onPress={() => navigation.navigate("SellerOrderDetail", { orderId: item.orderId })}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.orderRowId}>{item.orderId}</Text>
-              <Text style={styles.orderRowDate}>{formatOrderDate(item.createdAt)}</Text>
+        renderItem={({ item }) =>
+          tab === "Products" ? (
+            <View style={styles.productCard}>
+              <LazyImage uri={item.images?.[0]} style={styles.productImage} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.productName} numberOfLines={1}>{item.nameKannada || item.name}</Text>
+                <Text style={styles.productMeta}>{item.category} · {item.stock} in stock</Text>
+              </View>
+              <View style={[styles.liveBadge, !item.isAvailable && styles.pausedBadge]}>
+                <Text style={styles.liveBadgeText}>{item.isAvailable ? "Live" : "Paused"}</Text>
+              </View>
+              <Text style={styles.productPrice}>{formatRupees(item.price)}</Text>
+              <TouchableOpacity onPress={() => handleDeleteProduct(item)} style={styles.deleteBtn}>
+                <Text style={styles.deleteIcon}>🗑</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.orderRowStatus}>{getOrderStatusLabel(item.status, language)}</Text>
-          </TouchableOpacity>
-        )}
+          ) : tab === "Orders" ? (
+            <TouchableOpacity style={styles.orderRow} onPress={() => navigation.navigate("SellerOrderDetail", { orderId: item.orderId })}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.orderRowId}>{item.orderId}</Text>
+                <Text style={styles.orderRowDate}>{formatOrderDate(item.createdAt)}</Text>
+              </View>
+              <Text style={styles.orderRowStatus}>{getOrderStatusLabel(item.status, language)}</Text>
+            </TouchableOpacity>
+          ) : null
+        }
+        ListEmptyComponent={
+          tab === "Products" && !productsLoading ? (
+            <Text style={styles.emptyText}>No products yet. Switch to "Add Product" to list one.</Text>
+          ) : tab === "Orders" && !ordersLoading ? (
+            <Text style={styles.emptyText}>No orders yet.</Text>
+          ) : null
+        }
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.white },
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: colors.primary, padding: spacing.screenPadding },
-  shopNameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-  shopName: { ...typography.h3, color: colors.white },
-  verified: { color: colors.accent, fontWeight: "700" },
-  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: "#4CAF50" },
-  headerActions: { flexDirection: "row", gap: spacing.sm },
-  headerBtn: { width: spacing.minTouchTarget, height: spacing.minTouchTarget, alignItems: "center", justifyContent: "center" },
-  headerBtnText: { fontSize: 20 },
-  statsRow: { flexDirection: "row", padding: spacing.screenPadding, gap: spacing.sm },
-  statBox: { flex: 1, backgroundColor: colors.grayLight, borderRadius: spacing.cardRadius, padding: spacing.md, alignItems: "center" },
-  statValue: { ...typography.h2, fontSize: 20, color: colors.textPrimary },
-  statValueAlert: { color: colors.error },
-  statLabel: { ...typography.caption, color: colors.textMuted, marginTop: 4, textAlign: "center" },
-  errorBox: { backgroundColor: "#FDECEA", marginHorizontal: spacing.screenPadding, padding: spacing.md, borderRadius: spacing.cardRadius, marginBottom: spacing.sm },
+  screen: { flex: 1, backgroundColor: colors.background },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: colors.white, padding: spacing.screenPadding, borderBottomWidth: 1, borderBottomColor: colors.border },
+  headerTitle: { ...typography.h3, color: colors.primary },
+  logout: { ...typography.body, color: colors.error, fontWeight: "600" },
+  body: { flex: 1 },
+  titleRow: { flexDirection: "row", alignItems: "center", gap: spacing.xs },
+  title: { ...typography.h1, fontSize: 26, color: colors.textPrimary },
+  verified: { color: colors.accent, fontWeight: "900", fontSize: 20 },
+  subtitle: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs, marginBottom: spacing.md },
+  errorBox: { backgroundColor: "#FDECEA", padding: spacing.md, borderRadius: spacing.cardRadius, marginBottom: spacing.sm },
   errorText: { ...typography.caption, color: colors.error },
-  list: { paddingHorizontal: spacing.screenPadding, paddingBottom: spacing.xl },
+  statsRow: { flexDirection: "row", gap: spacing.sm, marginBottom: spacing.sm },
+  statBox: { flex: 1, backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, minHeight: 90, justifyContent: "center" },
+  statIcon: { fontSize: 18, marginBottom: spacing.xs, color: colors.primary, fontWeight: "700" },
+  statValue: { ...typography.h1, fontSize: 20, color: colors.textPrimary },
+  statLabel: { ...typography.caption, color: colors.textMuted, marginTop: 4 },
+  tabRow: { flexDirection: "row", backgroundColor: colors.grayLight, borderRadius: 24, padding: 4, marginBottom: spacing.md },
+  tab: { flex: 1, paddingVertical: spacing.sm, alignItems: "center", borderRadius: 20 },
+  tabActive: { backgroundColor: colors.white },
+  tabText: { ...typography.caption, color: colors.textMuted, fontWeight: "600" },
+  tabTextActive: { color: colors.textPrimary },
   pendingSection: { marginBottom: spacing.sm },
   sectionTitle: { ...typography.h3, color: colors.textPrimary, marginVertical: spacing.sm },
-  pendingCard: { backgroundColor: colors.white, borderLeftWidth: 4, borderLeftColor: colors.error, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.md, shadowColor: colors.black, shadowOpacity: 0.08, shadowRadius: 4, elevation: 2 },
+  pendingCard: { backgroundColor: colors.white, borderLeftWidth: 4, borderLeftColor: colors.error, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.md },
   farmerName: { ...typography.h3, fontSize: 15, color: colors.textPrimary },
   village: { ...typography.caption, color: colors.textMuted, marginTop: 2 },
   itemsSummary: { ...typography.body, color: colors.textPrimary, marginTop: 4, fontWeight: "600" },
@@ -180,4 +261,15 @@ const styles = StyleSheet.create({
   orderRowId: { ...typography.body, color: colors.textPrimary, fontWeight: "600" },
   orderRowDate: { ...typography.caption, color: colors.textMuted },
   orderRowStatus: { ...typography.caption, color: colors.primaryMid, fontWeight: "700" },
+  productCard: { flexDirection: "row", alignItems: "center", gap: spacing.sm, backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.sm, marginBottom: spacing.sm },
+  productImage: { width: 44, height: 44, borderRadius: spacing.buttonRadius },
+  productName: { ...typography.body, fontWeight: "700", color: colors.textPrimary },
+  productMeta: { ...typography.caption, color: colors.textMuted, marginTop: 2 },
+  liveBadge: { backgroundColor: colors.primaryMid, borderRadius: 12, paddingHorizontal: spacing.sm, paddingVertical: 3 },
+  pausedBadge: { backgroundColor: colors.textMuted },
+  liveBadgeText: { color: colors.white, fontSize: 10, fontWeight: "700" },
+  productPrice: { ...typography.body, fontWeight: "700", color: colors.textPrimary },
+  deleteBtn: { padding: spacing.xs },
+  deleteIcon: { fontSize: 16, color: colors.error },
+  emptyText: { ...typography.body, color: colors.textMuted, textAlign: "center", marginTop: spacing.xl },
 });

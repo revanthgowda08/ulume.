@@ -160,23 +160,6 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.bannerText}>🌧️ {t("ಮಳೆಗಾಲ ಬಂತು — ಬಿತ್ತನೆ ಸಮಯ!")}</Text>
         </LinearGradient>
 
-        <View style={styles.sellSection}>
-          <TouchableOpacity style={styles.sellCard} onPress={() => navigation.navigate("MyCrops")}>
-            <Text style={styles.sellCardIcon}>🌾</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.sellCardTitle}>Sell Your Harvest</Text>
-              <Text style={styles.sellCardSub}>List crops for buyers to discover</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.leadsCard} onPress={() => navigation.navigate("BuyerLeads")}>
-            <Text style={styles.sellCardIcon}>🤝</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.sellCardTitle}>Buyer Leads</Text>
-              <Text style={styles.sellCardSub}>Requests from buyers</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
         <View style={styles.section}>
           <View style={styles.categoryGrid}>
             {CATEGORIES.map((cat) => (
@@ -248,12 +231,6 @@ const styles = StyleSheet.create({
   goBtnText: { color: colors.primary, fontWeight: "700" },
   banner: { marginHorizontal: spacing.screenPadding, marginTop: spacing.md, borderRadius: spacing.cardRadius, padding: spacing.md },
   bannerText: { ...typography.h3, color: colors.white },
-  sellSection: { flexDirection: "row", gap: spacing.sm, paddingHorizontal: spacing.screenPadding, marginTop: spacing.md },
-  sellCard: { flex: 1, flexDirection: "row", alignItems: "center", gap: spacing.sm, backgroundColor: colors.primaryLight, borderRadius: spacing.cardRadius, padding: spacing.md },
-  leadsCard: { flex: 1, flexDirection: "row", alignItems: "center", gap: spacing.sm, backgroundColor: colors.grayLight, borderRadius: spacing.cardRadius, padding: spacing.md },
-  sellCardIcon: { fontSize: 24 },
-  sellCardTitle: { ...typography.body, fontWeight: "700", color: colors.textPrimary, fontSize: 13 },
-  sellCardSub: { ...typography.caption, color: colors.textMuted, fontSize: 11, marginTop: 2 },
   section: { paddingHorizontal: spacing.screenPadding, marginTop: spacing.lg },
   sectionTitle: { ...typography.h3, color: colors.textPrimary, marginBottom: spacing.md },
   categoryGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" },

@@ -13,41 +13,35 @@ import OrderTrackingScreen from "../screens/farmer/OrderTrackingScreen";
 import OrderHistoryScreen from "../screens/farmer/OrderHistoryScreen";
 import WalletScreen from "../screens/farmer/WalletScreen";
 import ProfileScreen from "../screens/farmer/ProfileScreen";
-import MyCropsScreen from "../screens/farmer/MyCropsScreen";
+import FarmerDashboardScreen from "../screens/farmer/FarmerDashboardScreen";
 import AddCropListingScreen from "../screens/farmer/AddCropListingScreen";
-import BuyerLeadsScreen from "../screens/farmer/BuyerLeadsScreen";
+import AIToolsScreen from "../screens/farmer/AIToolsScreen";
+import CropAdvisorScreen from "../screens/farmer/CropAdvisorScreen";
+import DiseaseDetectionScreen from "../screens/farmer/DiseaseDetectionScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const sharedStackScreens = (StackNav) => (
-  <>
-    <StackNav.Screen name="Category" component={CategoryScreen} />
-    <StackNav.Screen name="SearchResults" component={SearchResultsScreen} />
-    <StackNav.Screen name="ProductDetail" component={ProductDetailScreen} />
-    <StackNav.Screen name="Cart" component={CartScreen} />
-    <StackNav.Screen name="Checkout" component={CheckoutScreen} />
-    <StackNav.Screen name="OrderConfirm" component={OrderConfirmScreen} />
-    <StackNav.Screen name="OrderTracking" component={OrderTrackingScreen} />
-    <StackNav.Screen name="MyCrops" component={MyCropsScreen} />
-    <StackNav.Screen name="AddCropListing" component={AddCropListingScreen} />
-    <StackNav.Screen name="BuyerLeads" component={BuyerLeadsScreen} />
-  </>
-);
-
 function HomeStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="HomeMain" component={HomeScreen} />
-      {sharedStackScreens(Stack)}
+      <Stack.Screen name="HomeMain" component={FarmerDashboardScreen} />
+      <Stack.Screen name="AddCropListing" component={AddCropListingScreen} />
+      <Stack.Screen name="AITools" component={AIToolsScreen} />
+      <Stack.Screen name="CropAdvisor" component={CropAdvisorScreen} />
+      <Stack.Screen name="DiseaseDetection" component={DiseaseDetectionScreen} />
     </Stack.Navigator>
   );
 }
 
+// The original voice/category marketplace browser (buying agri-inputs) lives
+// under the Search tab now that Home is the ulume.shop-style Farmer Dashboard.
 function SearchStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="SearchMain" component={SearchResultsScreen} />
+      <Stack.Screen name="SearchMain" component={HomeScreen} />
+      <Stack.Screen name="Category" component={CategoryScreen} />
+      <Stack.Screen name="SearchResults" component={SearchResultsScreen} />
       <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
       <Stack.Screen name="Cart" component={CartScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
@@ -78,9 +72,6 @@ function ProfileStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileMain" component={ProfileScreen} />
-      <Stack.Screen name="MyCrops" component={MyCropsScreen} />
-      <Stack.Screen name="AddCropListing" component={AddCropListingScreen} />
-      <Stack.Screen name="BuyerLeads" component={BuyerLeadsScreen} />
     </Stack.Navigator>
   );
 }

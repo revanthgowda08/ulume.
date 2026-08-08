@@ -31,3 +31,19 @@ export const uploadSellerDocument = async (sellerId, localUri, docName) => {
   await ref.putFile(localUri);
   return ref.getDownloadURL();
 };
+
+export const uploadCropPhoto = async (farmerId, listingId, localUri) => {
+  const compressedUri = await compressImage(localUri);
+  const path = `farmers/${farmerId}/cropListings/${listingId}.webp`;
+  const ref = storage().ref(path);
+  await ref.putFile(compressedUri);
+  return ref.getDownloadURL();
+};
+
+export const uploadFarmPhoto = async (farmerId, localUri) => {
+  const compressedUri = await compressImage(localUri);
+  const path = `farmers/${farmerId}/farmPhoto.webp`;
+  const ref = storage().ref(path);
+  await ref.putFile(compressedUri);
+  return ref.getDownloadURL();
+};

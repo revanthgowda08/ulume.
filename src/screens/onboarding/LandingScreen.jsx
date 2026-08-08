@@ -5,9 +5,12 @@ import { spacing } from "../../theme/spacing";
 
 export default function LandingScreen({ navigation }) {
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={{ padding: spacing.screenPadding, paddingTop: spacing.xl * 2 }}>
-      <View style={styles.badge}>
-        <Text style={styles.badgeText}>✨ India's farmer-first agri-commerce platform</Text>
+    <ScrollView style={styles.screen} contentContainerStyle={{ padding: spacing.screenPadding, paddingTop: spacing.xl * 1.5 }}>
+      <View style={styles.logoRow}>
+        <View style={styles.logoMark}>
+          <Text style={styles.logoLeaf}>🍃</Text>
+        </View>
+        <Text style={styles.wordmark}>ULUME</Text>
       </View>
 
       <Text style={styles.headline}>
@@ -16,9 +19,8 @@ export default function LandingScreen({ navigation }) {
       </Text>
 
       <Text style={styles.body}>
-        ULUME unites farmers, buyers, and vendors on one trusted marketplace — from seed to
-        harvest to plate. Buy seeds, machinery, fertilizers. Sell your harvest directly to
-        restaurants, exporters & retailers.
+        From soil to shelf — the trusted agri commerce platform for India. Buy seeds,
+        machinery, fertilizers. Sell your harvest directly to restaurants, exporters & retailers.
       </Text>
 
       <TouchableOpacity style={styles.primaryBtn} onPress={() => navigation.navigate("Signup")}>
@@ -53,8 +55,10 @@ export default function LandingScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.background },
-  badge: { alignSelf: "flex-start", backgroundColor: colors.primaryLight, borderRadius: 20, paddingHorizontal: spacing.md, paddingVertical: spacing.xs, marginBottom: spacing.lg },
-  badgeText: { ...typography.caption, color: colors.primaryMid, fontWeight: "600" },
+  logoRow: { flexDirection: "row", alignItems: "center", gap: spacing.sm, marginBottom: spacing.lg },
+  logoMark: { width: 36, height: 36, borderRadius: 10, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center" },
+  logoLeaf: { fontSize: 18 },
+  wordmark: { ...typography.h2, fontSize: 22, color: colors.primary },
   headline: { ...typography.h1, color: colors.textPrimary, marginBottom: spacing.md },
   headlineAccent: { color: colors.primaryMid },
   body: { ...typography.body, color: colors.textMuted, marginBottom: spacing.xl, lineHeight: 24 },

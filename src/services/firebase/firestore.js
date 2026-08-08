@@ -163,6 +163,8 @@ export const getSellerProducts = async (sellerId, cursor = null) => {
   return { products, nextCursor };
 };
 
+export const deleteProduct = (productId) => firestore().collection("products").doc(productId).delete();
+
 // --- Crop listings (farmer sells harvest to buyers) ---
 
 export const createCropListing = async (listingData) => {
