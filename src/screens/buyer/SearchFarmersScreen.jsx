@@ -25,6 +25,9 @@ export default function SearchFarmersScreen({ navigation }) {
         isOrganic,
       });
       setResults(farmers);
+    } catch (e) {
+      console.error("searchFarmersByCrop failed:", e);
+      Alert.alert("Error", "Couldn't search right now. Please try again.");
     } finally {
       setLoading(false);
     }

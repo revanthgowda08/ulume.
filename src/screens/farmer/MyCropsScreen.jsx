@@ -16,13 +16,19 @@ export default function MyCropsScreen({ navigation }) {
   const { user } = useAuthStore();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       if (!user?.uid) return;
       setLoading(true);
+      setLoadError(false);
       getFarmerCropListings(user.uid)
         .then(setListings)
+        .catch((error) => {
+          console.error("getFarmerCropListings failed:", error);
+          setLoadError(true);
+        })
         .finally(() => setLoading(false));
     }, [user?.uid])
   );
@@ -38,6 +44,12 @@ export default function MyCropsScreen({ navigation }) {
           <Text style={styles.addBtnText}>+ Add</Text>
         </TouchableOpacity>
       </View>
+
+      {loadError && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorBannerText}>Couldn't load your crops right now. Pull down to retry.</Text>
+        </View>
+      )}
 
       {loading ? (
         <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.xl }} />
@@ -77,6 +89,8 @@ const styles = StyleSheet.create({
   title: { ...typography.h3, color: colors.textPrimary, flex: 1 },
   addBtn: { backgroundColor: colors.accent, borderRadius: spacing.buttonRadius, paddingHorizontal: spacing.md, paddingVertical: spacing.sm, minHeight: spacing.minTouchTarget - 8, justifyContent: "center" },
   addBtnText: { color: colors.white, fontWeight: "700", fontSize: 13 },
+  errorBanner: { backgroundColor: "#FDECEA", padding: spacing.md, margin: spacing.screenPadding, borderRadius: spacing.cardRadius },
+  errorBannerText: { ...typography.caption, color: colors.error },
   list: { padding: spacing.screenPadding },
   card: { flexDirection: "row", alignItems: "center", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm },
   cropName: { ...typography.body, fontWeight: "700", color: colors.textPrimary },

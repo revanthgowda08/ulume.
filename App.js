@@ -10,6 +10,19 @@ import { colors } from "./src/theme/colors";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
+// Errors thrown inside promises/async callbacks (e.g. a failed Firestore
+// read in a useEffect) never reach React's render-time error boundary and,
+// left unhandled, terminate the app in a release build with no trace. This
+// routes them through the same logging path as render errors so at least
+// `adb logcat` shows what happened instead of a silent close.
+if (global.ErrorUtils) {
+  const defaultHandler = global.ErrorUtils.getGlobalHandler();
+  global.ErrorUtils.setGlobalHandler((error, isFatal) => {
+    console.error("Global error handler:", isFatal ? "FATAL" : "non-fatal", error);
+    defaultHandler(error, isFatal);
+  });
+}
+
 export default function App() {
   const [fontsReady, setFontsReady] = useState(false);
 

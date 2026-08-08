@@ -21,11 +21,17 @@ export default function BuyerDashboardScreen({ navigation }) {
   const [tab, setTab] = useState("Procurement");
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     if (!buyer?.uid) return;
+    setLoadError(false);
     getBuyerProcurementRequests(buyer.uid)
       .then(setRequests)
+      .catch((error) => {
+        console.error("getBuyerProcurementRequests failed:", error);
+        setLoadError(true);
+      })
       .finally(() => setLoading(false));
   }, [buyer?.uid]);
 
@@ -43,6 +49,12 @@ export default function BuyerDashboardScreen({ navigation }) {
       <View style={styles.body}>
         <Text style={styles.title}>Buyer Dashboard</Text>
         <Text style={styles.subtitle}>Find farmers, manage procurement, track orders.</Text>
+
+        {loadError && (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorBannerText}>Couldn't load your requests right now. Pull down to retry.</Text>
+          </View>
+        )}
 
         <View style={styles.statsGrid}>
           <TouchableOpacity style={styles.statCard} onPress={() => navigation.navigate("SearchFarmers")}>
@@ -116,6 +128,8 @@ const styles = StyleSheet.create({
   headerTitle: { ...typography.h3, color: colors.primary },
   logout: { ...typography.body, color: colors.error, fontWeight: "600" },
   body: { padding: spacing.screenPadding, flex: 1 },
+  errorBanner: { backgroundColor: "#FDECEA", padding: spacing.md, borderRadius: spacing.cardRadius, marginTop: spacing.sm },
+  errorBannerText: { ...typography.caption, color: colors.error },
   title: { ...typography.h1, fontSize: 26, color: colors.textPrimary },
   subtitle: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs, marginBottom: spacing.lg },
   statsGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: spacing.lg },
