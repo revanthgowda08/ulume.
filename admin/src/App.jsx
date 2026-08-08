@@ -8,6 +8,7 @@ import Orders from "./pages/Orders";
 import Sellers from "./pages/Sellers";
 import Farmers from "./pages/Farmers";
 import Analytics from "./pages/Analytics";
+import Verification from "./pages/Verification";
 
 function Layout({ children }) {
   return (
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/sellers" element={<ProtectedRoute><Layout><Sellers /></Layout></ProtectedRoute>} />
           <Route path="/farmers" element={<ProtectedRoute><Layout><Farmers /></Layout></ProtectedRoute>} />
           <Route path="/analytics" element={<ProtectedRoute><Layout><Analytics /></Layout></ProtectedRoute>} />
+          <Route path="/verification" element={<ProtectedRoute><Layout><Verification /></Layout></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
