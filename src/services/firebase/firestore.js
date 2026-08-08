@@ -97,13 +97,19 @@ export const getFarmerOrders = async (farmerId, cursor = null) => {
   return { orders, nextCursor };
 };
 
-export const listenToSellerPendingOrders = (sellerId, callback) =>
+export const listenToSellerPendingOrders = (sellerId, callback, onError) =>
   firestore()
     .collection("orders")
     .where("sellerId", "==", sellerId)
     .where("status", "==", "placed")
     .orderBy("createdAt", "desc")
-    .onSnapshot((snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+    .onSnapshot(
+      (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (error) => {
+        console.error("listenToSellerPendingOrders failed:", error);
+        onError?.(error);
+      }
+    );
 
 export const getSellerOrders = async (sellerId, cursor = null) => {
   let query = firestore()

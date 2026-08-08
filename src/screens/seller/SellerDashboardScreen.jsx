@@ -21,11 +21,17 @@ export default function SellerDashboardScreen({ navigation }) {
   const t = useT();
   const [pendingOrders, setPendingOrders] = useState([]);
   const [allOrders, setAllOrders] = useState([]);
+  const [loadError, setLoadError] = useState(null);
 
   useEffect(() => {
     if (!seller?.uid) return;
-    const unsubscribe = listenToSellerPendingOrders(seller.uid, setPendingOrders);
-    getSellerOrders(seller.uid).then(({ orders }) => setAllOrders(orders));
+    setLoadError(null);
+    const unsubscribe = listenToSellerPendingOrders(seller.uid, setPendingOrders, (error) =>
+      setLoadError(error.message)
+    );
+    getSellerOrders(seller.uid)
+      .then(({ orders }) => setAllOrders(orders))
+      .catch((error) => setLoadError(error.message));
     return unsubscribe;
   }, [seller?.uid]);
 
@@ -77,6 +83,12 @@ export default function SellerDashboardScreen({ navigation }) {
           <Text style={styles.statLabel}>{t("ಬಾಕಿ")}</Text>
         </View>
       </View>
+
+      {loadError && (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>⚠️ {loadError}</Text>
+        </View>
+      )}
 
       <FlatList
         data={allOrders}
@@ -134,6 +146,8 @@ const styles = StyleSheet.create({
   statValue: { ...typography.h2, fontSize: 20, color: colors.textPrimary },
   statValueAlert: { color: colors.error },
   statLabel: { ...typography.caption, color: colors.textMuted, marginTop: 4, textAlign: "center" },
+  errorBox: { backgroundColor: "#FDECEA", marginHorizontal: spacing.screenPadding, padding: spacing.md, borderRadius: spacing.cardRadius, marginBottom: spacing.sm },
+  errorText: { ...typography.caption, color: colors.error },
   list: { paddingHorizontal: spacing.screenPadding, paddingBottom: spacing.xl },
   pendingSection: { marginBottom: spacing.sm },
   sectionTitle: { ...typography.h3, color: colors.textPrimary, marginVertical: spacing.sm },
