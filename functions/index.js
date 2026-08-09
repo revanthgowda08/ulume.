@@ -5,10 +5,13 @@ admin.initializeApp();
 const { onOrderCreated, onOrderStatusUpdate } = require("./orderHandler");
 const { weeklySettlement } = require("./settlementJob");
 const { sendOrderConfirmationToFarmer, sendWhatsappText } = require("./whatsappSender");
+const { createRazorpayOrder, verifyRazorpayPayment } = require("./razorpay");
 
 exports.onOrderCreated = onOrderCreated;
 exports.onOrderStatusUpdate = onOrderStatusUpdate;
 exports.weeklySettlement = weeklySettlement;
+exports.createRazorpayOrder = createRazorpayOrder;
+exports.verifyRazorpayPayment = verifyRazorpayPayment;
 
 // Triggered when the admin panel approves/rejects a seller (writes isVerified).
 // Sends the WhatsApp notification server-side so the access token never has

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Animated, ActivityIndicator, Alert } from "react-native";
 import * as Location from "expo-location";
+import RazorpayCheckout from "react-native-razorpay";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
@@ -8,6 +9,7 @@ import { formatRupees, calculateDeliveryCharge } from "../../utils/formatters";
 import { useCartStore } from "../../store/cartStore";
 import { useAuthStore } from "../../store/authStore";
 import { placeOrder, getSellerById } from "../../services/firebase/firestore";
+import { createRazorpayOrder, verifyRazorpayPayment } from "../../services/firebase/payments";
 import { useT } from "../../i18n/useT";
 
 const STEPS = ["ವಿಳಾಸ", "ಪಾವತಿ", "ಖಚಿತ", "ಯಶಸ್ಸು"];
@@ -16,7 +18,9 @@ export default function CheckoutScreen({ navigation }) {
   const t = useT();
   const [step, setStep] = useState(0);
   const [address, setAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cod");
   const [placing, setPlacing] = useState(false);
+  const [payingOnline, setPayingOnline] = useState(false);
   const [orderId, setOrderId] = useState(null);
   const [commissionRate, setCommissionRate] = useState(0.065);
   const progress = useRef(new Animated.Value(0)).current;
@@ -64,9 +68,10 @@ export default function CheckoutScreen({ navigation }) {
   const handlePlaceOrder = async () => {
     if (!items.length) return;
     setPlacing(true);
+    let id = null;
     try {
       const commissionAmount = Math.round(subtotal * commissionRate);
-      const id = await placeOrder({
+      id = await placeOrder({
         farmerId: user.uid,
         farmerName: user.name || "",
         farmerPhone: user.phone,
@@ -89,14 +94,55 @@ export default function CheckoutScreen({ navigation }) {
         commissionRate,
         commissionAmount,
         isFirstOrder,
+        paymentMethod,
+      });
+    } catch (e) {
+      setPlacing(false);
+      Alert.alert(t("ದೋಷ"), t("ಆರ್ಡರ್ ಇಡಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
+      return;
+    }
+    setPlacing(false);
+
+    if (paymentMethod === "cod") {
+      setOrderId(id);
+      clearCart();
+      setStep(3);
+      return;
+    }
+
+    // Online payment: the order already exists (as "pending") so if the user
+    // abandons or the payment fails, it's still there for retry or COD
+    // fallback — nothing about the charge itself is decided by this device.
+    setPayingOnline(true);
+    try {
+      const razorpayOrder = await createRazorpayOrder(id);
+      const result = await RazorpayCheckout.open({
+        order_id: razorpayOrder.razorpayOrderId,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        key: razorpayOrder.keyId,
+        name: "ULUME",
+        description: `Order ${id}`,
+        prefill: { contact: user.phone || "", name: user.name || "" },
+        theme: { color: "#1A3C34" },
+      });
+      await verifyRazorpayPayment({
+        orderId: id,
+        razorpayOrderId: result.razorpay_order_id,
+        razorpayPaymentId: result.razorpay_payment_id,
+        razorpaySignature: result.razorpay_signature,
       });
       setOrderId(id);
       clearCart();
       setStep(3);
     } catch (e) {
-      Alert.alert(t("ದೋಷ"), t("ಆರ್ಡರ್ ಇಡಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
+      Alert.alert(
+        "Payment not completed",
+        "Your order is saved but payment wasn't confirmed. You can try paying again from Order Tracking, or ask the vendor about Cash on Delivery."
+      );
+      navigation.replace("OrderTracking", { orderId: id });
     } finally {
-      setPlacing(false);
+      setPayingOnline(false);
     }
   };
 
@@ -137,14 +183,22 @@ export default function CheckoutScreen({ navigation }) {
         {step === 1 && (
           <View>
             <Text style={styles.sectionTitle}>{t("ಪಾವತಿ")}</Text>
-            <View style={styles.codCard}>
+            <TouchableOpacity
+              style={[styles.codCard, paymentMethod !== "cod" && styles.paymentCardInactive]}
+              onPress={() => setPaymentMethod("cod")}
+            >
               <Text style={styles.codCardTitle}>💰 {t("ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ")} (CoD)</Text>
-              <Text style={styles.codCardSub}>{t("ಆಯ್ಕೆಯಾಗಿದೆ")}</Text>
-            </View>
-            <View style={styles.upiCard}>
-              <Text style={styles.upiCardTitle}>UPI</Text>
-              <Text style={styles.upiCardSub}>{t("ಶೀಘ್ರದಲ್ಲಿ ಬರುತ್ತದೆ")}</Text>
-            </View>
+              <Text style={styles.codCardSub}>{paymentMethod === "cod" ? t("ಆಯ್ಕೆಯಾಗಿದೆ") : "Tap to select"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.upiCard, paymentMethod === "upi" && styles.upiCardActive]}
+              onPress={() => setPaymentMethod("upi")}
+            >
+              <Text style={[styles.upiCardTitle, paymentMethod === "upi" && styles.upiCardTitleActive]}>📱 UPI / Card</Text>
+              <Text style={[styles.upiCardSub, paymentMethod === "upi" && styles.upiCardSubActive]}>
+                {paymentMethod === "upi" ? t("ಆಯ್ಕೆಯಾಗಿದೆ") : "Pay online via Razorpay — tap to select"}
+              </Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.nextBtn} onPress={() => setStep(2)}>
               <Text style={styles.nextBtnText}>{t("ಮುಂದೆ")}</Text>
             </TouchableOpacity>
@@ -167,8 +221,15 @@ export default function CheckoutScreen({ navigation }) {
               <Text style={styles.totalValue}>{formatRupees(total)}</Text>
             </View>
             <Text style={styles.addressPreview}>📍 {address}</Text>
-            <TouchableOpacity style={styles.nextBtn} onPress={handlePlaceOrder} disabled={placing}>
-              {placing ? <ActivityIndicator color={colors.white} /> : <Text style={styles.nextBtnText}>{t("ಆರ್ಡರ್ ಇಡಿ")}</Text>}
+            <Text style={styles.paymentPreview}>
+              {paymentMethod === "cod" ? "💰 Cash on Delivery" : "📱 Pay online via UPI/Card"}
+            </Text>
+            <TouchableOpacity style={styles.nextBtn} onPress={handlePlaceOrder} disabled={placing || payingOnline}>
+              {placing || payingOnline ? (
+                <ActivityIndicator color={colors.white} />
+              ) : (
+                <Text style={styles.nextBtnText}>{t("ಆರ್ಡರ್ ಇಡಿ")}</Text>
+              )}
             </TouchableOpacity>
           </View>
         )}
@@ -216,9 +277,13 @@ const styles = StyleSheet.create({
   codCard: { borderWidth: 2, borderColor: colors.primaryMid, backgroundColor: colors.primaryLight, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.md },
   codCardTitle: { ...typography.h3, color: colors.primary },
   codCardSub: { ...typography.caption, color: colors.primaryMid, marginTop: 4 },
-  upiCard: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.cardRadius, padding: spacing.md, opacity: 0.5 },
+  paymentCardInactive: { borderColor: colors.border, backgroundColor: colors.white, opacity: 0.6 },
+  upiCard: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.md },
+  upiCardActive: { borderWidth: 2, borderColor: colors.primaryMid, backgroundColor: colors.primaryLight },
   upiCardTitle: { ...typography.h3, color: colors.textMuted },
+  upiCardTitleActive: { color: colors.primary },
   upiCardSub: { ...typography.caption, color: colors.textMuted, marginTop: 4 },
+  upiCardSubActive: { color: colors.primaryMid },
   summaryRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: spacing.xs },
   summaryLabel: { ...typography.body, color: colors.textMuted },
   summaryValue: { ...typography.body, color: colors.textPrimary },
@@ -226,6 +291,7 @@ const styles = StyleSheet.create({
   totalLabel: { ...typography.h3, color: colors.textPrimary },
   totalValue: { ...typography.h3, color: colors.textPrimary },
   addressPreview: { ...typography.body, color: colors.textMuted, marginTop: spacing.md },
+  paymentPreview: { ...typography.body, color: colors.textPrimary, marginTop: spacing.xs, fontWeight: "600" },
   successBox: { alignItems: "center", marginTop: spacing.xl },
   successIcon: { fontSize: 64 },
   successTitle: { ...typography.h2, color: colors.primary, marginTop: spacing.md },

@@ -6,10 +6,11 @@ import firestore from "@react-native-firebase/firestore";
 import auth from "@react-native-firebase/auth";
 import storage from "@react-native-firebase/storage";
 import messaging from "@react-native-firebase/messaging";
+import functions from "@react-native-firebase/functions";
 
 firestore().settings({
   cacheSizeBytes: firestore.CACHE_SIZE_UNLIMITED,
   persistence: true,
 });
 
-export { firestore, auth, storage, messaging };
+export { firestore, auth, storage, messaging, functions };
