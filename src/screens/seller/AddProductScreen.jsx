@@ -84,7 +84,7 @@ export default function AddProductScreen({ navigation }) {
         sellerNameKannada: seller.shopNameKannada,
         sellerPhone: seller.phone,
         district: seller.district,
-        location: seller.location,
+        location: seller.location || null,
         geohash,
         name,
         nameKannada,
@@ -123,6 +123,7 @@ export default function AddProductScreen({ navigation }) {
         { text: t("ಸರಿ"), onPress: () => navigation.replace("ProductList") },
       ]);
     } catch (e) {
+      console.error("createProduct failed:", e);
       Alert.alert(t("ದೋಷ"), t("ಉಳಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
     } finally {
       setSaving(false);
