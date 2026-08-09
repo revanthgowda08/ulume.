@@ -20,6 +20,7 @@ const DEMO_PASSWORD = "Demo@1234";
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -77,7 +78,18 @@ export default function LoginScreen({ navigation }) {
       <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" placeholderTextColor={colors.textMuted} />
 
       <Text style={styles.label}>Password</Text>
-      <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry placeholderTextColor={colors.textMuted} />
+      <View style={styles.passwordRow}>
+        <TextInput
+          style={styles.passwordInput}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+          placeholderTextColor={colors.textMuted}
+        />
+        <TouchableOpacity style={styles.eyeBtn} onPress={() => setShowPassword((v) => !v)}>
+          <Text style={styles.eyeIcon}>{showPassword ? "🙈" : "👁️"}</Text>
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity style={styles.submitBtn} onPress={handleLogin} disabled={loading}>
         {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.submitBtnText}>Sign In</Text>}
@@ -113,6 +125,10 @@ const styles = StyleSheet.create({
   errorBannerText: { ...typography.caption, color: colors.error },
   label: { ...typography.caption, color: colors.textPrimary, fontWeight: "600", marginTop: spacing.md, marginBottom: spacing.xs },
   input: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, padding: spacing.md, backgroundColor: colors.white, ...typography.body, color: colors.textPrimary },
+  passwordRow: { flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, backgroundColor: colors.white },
+  passwordInput: { flex: 1, padding: spacing.md, ...typography.body, color: colors.textPrimary },
+  eyeBtn: { width: spacing.minTouchTarget, height: spacing.minTouchTarget, alignItems: "center", justifyContent: "center" },
+  eyeIcon: { fontSize: 18 },
   submitBtn: { backgroundColor: colors.primary, borderRadius: spacing.buttonRadius, paddingVertical: spacing.md, alignItems: "center", marginTop: spacing.xl, minHeight: spacing.minTouchTarget, justifyContent: "center" },
   submitBtnText: { color: colors.white, fontWeight: "700", fontSize: 16 },
   demoLabel: { ...typography.caption, color: colors.textMuted, marginTop: spacing.xl, marginBottom: spacing.sm, textAlign: "center" },

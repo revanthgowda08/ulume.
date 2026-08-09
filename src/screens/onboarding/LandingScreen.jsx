@@ -27,7 +27,7 @@ export default function LandingScreen({ navigation }) {
         <Text style={styles.primaryBtnText}>🛍️ Browse Marketplace</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.secondaryBtn} onPress={() => navigation.navigate("Signup")}>
+      <TouchableOpacity style={styles.secondaryBtn} onPress={() => navigation.navigate("Signup", { lockedRole: "farmer" })}>
         <Text style={styles.secondaryBtnText}>🌱 Join as Farmer</Text>
       </TouchableOpacity>
 

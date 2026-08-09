@@ -16,12 +16,14 @@ const ROLES = [
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function SignupScreen({ navigation }) {
-  const [role, setRole] = useState("farmer");
+export default function SignupScreen({ navigation, route }) {
+  const lockedRole = route?.params?.lockedRole || null;
+  const [role, setRole] = useState(lockedRole || "farmer");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [state, setState] = useState("");
   const [district, setDistrict] = useState("");
   const [loading, setLoading] = useState(false);
@@ -92,22 +94,24 @@ export default function SignupScreen({ navigation }) {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: spacing.screenPadding, paddingBottom: spacing.xl }}>
-      <Text style={styles.title}>Create account</Text>
-      <Text style={styles.subtitle}>Pick a role to get started.</Text>
+      <Text style={styles.title}>{lockedRole ? "Join as a Farmer" : "Create account"}</Text>
+      <Text style={styles.subtitle}>{lockedRole ? "List your harvest and reach buyers directly." : "Pick a role to get started."}</Text>
 
-      <View style={styles.roleGrid}>
-        {ROLES.map((r) => (
-          <TouchableOpacity
-            key={r.key}
-            style={[styles.roleCard, role === r.key && styles.roleCardActive]}
-            onPress={() => handleRolePress(r.key)}
-          >
-            <Text style={styles.roleIcon}>{r.icon}</Text>
-            <Text style={styles.roleTitle}>{r.title}</Text>
-            <Text style={styles.roleSubtitle}>{r.subtitle}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {!lockedRole && (
+        <View style={styles.roleGrid}>
+          {ROLES.map((r) => (
+            <TouchableOpacity
+              key={r.key}
+              style={[styles.roleCard, role === r.key && styles.roleCardActive]}
+              onPress={() => handleRolePress(r.key)}
+            >
+              <Text style={styles.roleIcon}>{r.icon}</Text>
+              <Text style={styles.roleTitle}>{r.title}</Text>
+              <Text style={styles.roleSubtitle}>{r.subtitle}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
 
       <View style={styles.row}>
         <View style={styles.col}>
@@ -127,7 +131,18 @@ export default function SignupScreen({ navigation }) {
       {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
       <Text style={styles.label}>Password</Text>
-      <TextInput style={[styles.input, errors.password && styles.inputError]} value={password} onChangeText={setPassword} secureTextEntry placeholderTextColor={colors.textMuted} />
+      <View style={[styles.passwordRow, errors.password && styles.inputError]}>
+        <TextInput
+          style={styles.passwordInput}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+          placeholderTextColor={colors.textMuted}
+        />
+        <TouchableOpacity style={styles.eyeBtn} onPress={() => setShowPassword((v) => !v)}>
+          <Text style={styles.eyeIcon}>{showPassword ? "🙈" : "👁️"}</Text>
+        </TouchableOpacity>
+      </View>
       {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
       <View style={styles.row}>
@@ -177,6 +192,10 @@ const styles = StyleSheet.create({
   col: { flex: 1 },
   label: { ...typography.caption, color: colors.textPrimary, fontWeight: "600", marginTop: spacing.md, marginBottom: spacing.xs },
   input: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, padding: spacing.md, backgroundColor: colors.white, ...typography.body, color: colors.textPrimary },
+  passwordRow: { flexDirection: "row", alignItems: "center", borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, backgroundColor: colors.white },
+  passwordInput: { flex: 1, padding: spacing.md, ...typography.body, color: colors.textPrimary },
+  eyeBtn: { width: spacing.minTouchTarget, height: spacing.minTouchTarget, alignItems: "center", justifyContent: "center" },
+  eyeIcon: { fontSize: 18 },
   inputError: { borderColor: colors.error },
   errorText: { ...typography.caption, color: colors.error, marginTop: 4 },
   submitBtn: { backgroundColor: colors.primary, borderRadius: spacing.buttonRadius, paddingVertical: spacing.md, alignItems: "center", marginTop: spacing.xl, minHeight: spacing.minTouchTarget, justifyContent: "center" },
