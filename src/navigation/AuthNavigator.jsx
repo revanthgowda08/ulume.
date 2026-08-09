@@ -1,5 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import SplashScreen from "../screens/onboarding/SplashScreen";
+import ProblemSolutionScreen from "../screens/onboarding/ProblemSolutionScreen";
 import LandingScreen from "../screens/onboarding/LandingScreen";
 import SignupScreen from "../screens/onboarding/SignupScreen";
 import LoginScreen from "../screens/onboarding/LoginScreen";
@@ -10,6 +11,7 @@ export default function AuthNavigator() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Splash" component={SplashScreen} />
+      <Stack.Screen name="ProblemSolution" component={ProblemSolutionScreen} />
       <Stack.Screen name="Landing" component={LandingScreen} />
       <Stack.Screen name="Signup" component={SignupScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
