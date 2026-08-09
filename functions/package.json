@@ -1,6 +1,6 @@
 {
   "name": "ulume-functions",
-  "engines": { "node": "18" },
+  "engines": { "node": "20" },
   "main": "index.js",
   "scripts": {
     "serve": "firebase emulators:start --only functions,firestore",
