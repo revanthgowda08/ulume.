@@ -3,6 +3,7 @@ import Svg, { Line, Polyline, Circle, Text as SvgText } from "react-native-svg";
 import { colors } from "../theme/colors";
 import { typography } from "../theme/typography";
 import { spacing } from "../theme/spacing";
+import { cardShadow } from "../theme/shadow";
 
 const toDate = (timestamp) => (timestamp?.toDate ? timestamp.toDate() : new Date(timestamp));
 const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -101,6 +102,6 @@ export default function SalesTrendChart({ orders }) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm, alignItems: "center" },
+  wrap: { backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm, alignItems: "center", ...cardShadow },
   title: { ...typography.h3, fontSize: 15, color: colors.textPrimary, marginBottom: spacing.sm, alignSelf: "flex-start" },
 });

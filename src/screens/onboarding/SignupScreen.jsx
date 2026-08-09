@@ -6,6 +6,8 @@ import { spacing } from "../../theme/spacing";
 import { signUpWithEmail, createFarmerProfile, createSellerProfile, createBuyerProfile } from "../../services/firebase/auth";
 import { useAuthStore } from "../../store/authStore";
 import { useAppStore } from "../../store/appStore";
+import { useT } from "../../i18n/useT";
+import { useHeadingFont } from "../../theme/useHeadingFont";
 
 const ROLES = [
   { key: "farmer", icon: "🌱", title: "Farmer", subtitle: "Sell your harvest" },
@@ -17,6 +19,8 @@ const ROLES = [
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function SignupScreen({ navigation, route }) {
+  const t = useT();
+  const h2Font = useHeadingFont("h2");
   const lockedRole = route?.params?.lockedRole || null;
   const [role, setRole] = useState(lockedRole || "farmer");
   const [name, setName] = useState("");
@@ -94,8 +98,8 @@ export default function SignupScreen({ navigation, route }) {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ padding: spacing.screenPadding, paddingBottom: spacing.xl }}>
-      <Text style={styles.title}>{lockedRole ? "Join as a Farmer" : "Create account"}</Text>
-      <Text style={styles.subtitle}>{lockedRole ? "List your harvest and reach buyers directly." : "Pick a role to get started."}</Text>
+      <Text style={[styles.title, { fontFamily: h2Font }]}>{lockedRole ? t("ರೈತರಾಗಿ ಸೇರಿಕೊಳ್ಳಿ") : t("ಖಾತೆ ರಚಿಸಿ")}</Text>
+      <Text style={styles.subtitle}>{lockedRole ? t("ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ಪಟ್ಟಿ ಮಾಡಿ, ಖರೀದಿದಾರರನ್ನು ನೇರವಾಗಿ ತಲುಪಿ.") : t("ಪ್ರಾರಂಭಿಸಲು ಒಂದು ಪಾತ್ರ ಆಯ್ಕೆಮಾಡಿ.")}</Text>
 
       {!lockedRole && (
         <View style={styles.roleGrid}>
@@ -115,22 +119,22 @@ export default function SignupScreen({ navigation, route }) {
 
       <View style={styles.row}>
         <View style={styles.col}>
-          <Text style={styles.label}>Full Name</Text>
+          <Text style={styles.label}>{t("ಪೂರ್ಣ ಹೆಸರು")}</Text>
           <TextInput style={[styles.input, errors.name && styles.inputError]} value={name} onChangeText={setName} placeholderTextColor={colors.textMuted} />
           {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
         </View>
         <View style={styles.col}>
-          <Text style={styles.label}>Phone</Text>
+          <Text style={styles.label}>{t("ಫೋನ್")}</Text>
           <TextInput style={[styles.input, errors.phone && styles.inputError]} value={phone} onChangeText={setPhone} keyboardType="phone-pad" maxLength={10} placeholderTextColor={colors.textMuted} />
           {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
         </View>
       </View>
 
-      <Text style={styles.label}>Email</Text>
+      <Text style={styles.label}>{t("ಇಮೇಲ್")}</Text>
       <TextInput style={[styles.input, errors.email && styles.inputError]} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" placeholderTextColor={colors.textMuted} />
       {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
-      <Text style={styles.label}>Password</Text>
+      <Text style={styles.label}>{t("ಪಾಸ್‌ವರ್ಡ್")}</Text>
       <View style={[styles.passwordRow, errors.password && styles.inputError]}>
         <TextInput
           style={styles.passwordInput}
@@ -147,23 +151,23 @@ export default function SignupScreen({ navigation, route }) {
 
       <View style={styles.row}>
         <View style={styles.col}>
-          <Text style={styles.label}>State</Text>
+          <Text style={styles.label}>{t("ರಾಜ್ಯ")}</Text>
           <TextInput style={[styles.input, errors.state && styles.inputError]} value={state} onChangeText={setState} placeholderTextColor={colors.textMuted} />
           {errors.state && <Text style={styles.errorText}>{errors.state}</Text>}
         </View>
         <View style={styles.col}>
-          <Text style={styles.label}>District</Text>
+          <Text style={styles.label}>{t("ಜಿಲ್ಲೆ")}</Text>
           <TextInput style={[styles.input, errors.district && styles.inputError]} value={district} onChangeText={setDistrict} placeholderTextColor={colors.textMuted} />
           {errors.district && <Text style={styles.errorText}>{errors.district}</Text>}
         </View>
       </View>
 
       <TouchableOpacity style={styles.submitBtn} onPress={handleCreateAccount} disabled={loading}>
-        {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.submitBtnText}>Create account</Text>}
+        {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.submitBtnText}>{t("ಖಾತೆ ರಚಿಸಿ")}</Text>}
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.loginLink} onPress={() => navigation.navigate("Login")}>
-        <Text style={styles.loginLinkText}>Already have an account? Log in</Text>
+        <Text style={styles.loginLinkText}>{t("ಖಾತೆ ಈಗಾಗಲೇ ಇದೆಯೇ? ಲಾಗಿನ್ ಮಾಡಿ")}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

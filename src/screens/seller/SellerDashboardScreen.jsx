@@ -4,6 +4,7 @@ import LazyImage from "../../components/LazyImage";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
+import { cardShadow } from "../../theme/shadow";
 import { useAuthStore } from "../../store/authStore";
 import {
   listenToSellerPendingOrders,
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
   errorBox: { backgroundColor: "#FDECEA", padding: spacing.md, borderRadius: spacing.cardRadius, marginBottom: spacing.sm },
   errorText: { ...typography.caption, color: colors.error },
   statsRow: { flexDirection: "row", gap: spacing.sm, marginBottom: spacing.sm },
-  statBox: { flex: 1, backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, minHeight: 90, justifyContent: "center" },
+  statBox: { flex: 1, backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, minHeight: 90, justifyContent: "center", ...cardShadow },
   statIcon: { fontSize: 18, marginBottom: spacing.xs, color: colors.primary, fontWeight: "700" },
   statValue: { ...typography.h1, fontSize: 20, color: colors.textPrimary },
   statLabel: { ...typography.caption, color: colors.textMuted, marginTop: 4 },
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
   orderRowId: { ...typography.body, color: colors.textPrimary, fontWeight: "600" },
   orderRowDate: { ...typography.caption, color: colors.textMuted },
   orderRowStatus: { ...typography.caption, color: colors.primaryMid, fontWeight: "700" },
-  productCard: { flexDirection: "row", alignItems: "center", gap: spacing.sm, backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.sm, marginBottom: spacing.sm },
+  productCard: { flexDirection: "row", alignItems: "center", gap: spacing.sm, backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.sm, marginBottom: spacing.sm, ...cardShadow },
   productImage: { width: 44, height: 44, borderRadius: spacing.buttonRadius },
   productName: { ...typography.body, fontWeight: "700", color: colors.textPrimary },
   productMeta: { ...typography.caption, color: colors.textMuted, marginTop: 2 },

@@ -4,6 +4,8 @@ import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
 import { loginWithEmail } from "../../services/firebase/auth";
+import { useT } from "../../i18n/useT";
+import { useHeadingFont } from "../../theme/useHeadingFont";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -18,6 +20,8 @@ const DEMO_ACCOUNTS = [
 const DEMO_PASSWORD = "Demo@1234";
 
 export default function LoginScreen({ navigation }) {
+  const t = useT();
+  const h2Font = useHeadingFont("h2");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -65,8 +69,8 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Welcome back</Text>
-      <Text style={styles.subtitle}>Sign in to continue.</Text>
+      <Text style={[styles.title, { fontFamily: h2Font }]}>{t("ಮತ್ತೆ ಸ್ವಾಗತ")}</Text>
+      <Text style={styles.subtitle}>{t("ಮುಂದುವರಿಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.")}</Text>
 
       {error && (
         <View style={styles.errorBanner}>
@@ -74,10 +78,10 @@ export default function LoginScreen({ navigation }) {
         </View>
       )}
 
-      <Text style={styles.label}>Email</Text>
+      <Text style={styles.label}>{t("ಇಮೇಲ್")}</Text>
       <TextInput style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" placeholderTextColor={colors.textMuted} />
 
-      <Text style={styles.label}>Password</Text>
+      <Text style={styles.label}>{t("ಪಾಸ್‌ವರ್ಡ್")}</Text>
       <View style={styles.passwordRow}>
         <TextInput
           style={styles.passwordInput}
@@ -92,10 +96,10 @@ export default function LoginScreen({ navigation }) {
       </View>
 
       <TouchableOpacity style={styles.submitBtn} onPress={handleLogin} disabled={loading}>
-        {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.submitBtnText}>Sign In</Text>}
+        {loading ? <ActivityIndicator color={colors.white} /> : <Text style={styles.submitBtnText}>{t("ಸೈನ್ ಇನ್")}</Text>}
       </TouchableOpacity>
 
-      <Text style={styles.demoLabel}>Try a demo account:</Text>
+      <Text style={styles.demoLabel}>{t("ಡೆಮೊ ಖಾತೆ ಪ್ರಯತ್ನಿಸಿ:")}</Text>
       <View style={styles.demoGrid}>
         {DEMO_ACCOUNTS.map((demo) => (
           <TouchableOpacity
@@ -110,7 +114,7 @@ export default function LoginScreen({ navigation }) {
       </View>
 
       <TouchableOpacity style={styles.signupLink} onPress={() => navigation.navigate("Signup")}>
-        <Text style={styles.signupLinkText}>Don't have an account? Create one</Text>
+        <Text style={styles.signupLinkText}>{t("ಖಾತೆ ಇಲ್ಲವೇ? ಒಂದನ್ನು ರಚಿಸಿ")}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

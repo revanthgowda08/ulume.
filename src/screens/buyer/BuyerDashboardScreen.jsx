@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, 
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
+import { cardShadow } from "../../theme/shadow";
 import { useAuthStore } from "../../store/authStore";
 import { getBuyerProcurementRequests } from "../../services/firebase/firestore";
 import { formatRupees, formatOrderDate } from "../../utils/formatters";
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   title: { ...typography.h1, fontSize: 26, color: colors.textPrimary },
   subtitle: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs, marginBottom: spacing.lg },
   statsGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: spacing.lg },
-  statCard: { width: "48%", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm, minHeight: 110, justifyContent: "center" },
+  statCard: { width: "48%", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm, minHeight: 110, justifyContent: "center", ...cardShadow },
   statIcon: { fontSize: 22, marginBottom: spacing.xs },
   statValue: { ...typography.h1, fontSize: 26, color: colors.textPrimary },
   statCardTitle: { ...typography.h3, fontSize: 16, color: colors.textPrimary },
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
   tabActive: { backgroundColor: colors.white },
   tabText: { ...typography.caption, color: colors.textMuted, fontWeight: "600" },
   tabTextActive: { color: colors.textPrimary },
-  requestCard: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm },
+  requestCard: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm, ...cardShadow },
   requestTitle: { ...typography.body, fontWeight: "700", color: colors.textPrimary },
   requestDate: { ...typography.caption, color: colors.textMuted, marginTop: 2 },
   statusBadge: { borderRadius: 16, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },

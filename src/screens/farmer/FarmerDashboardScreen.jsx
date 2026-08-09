@@ -18,6 +18,7 @@ import * as ImagePicker from "expo-image-picker";
 import { colors } from "../../theme/colors";
 import { typography } from "../../theme/typography";
 import { spacing } from "../../theme/spacing";
+import { cardShadow } from "../../theme/shadow";
 import { useAuthStore } from "../../store/authStore";
 import { signOutUser, createFarmerProfile } from "../../services/firebase/auth";
 import { uploadFarmPhoto } from "../../services/firebase/storage";
@@ -27,8 +28,10 @@ import {
   updateProcurementRequestStatus,
 } from "../../services/firebase/firestore";
 import { formatOrderDate } from "../../utils/formatters";
+import { useT } from "../../i18n/useT";
+import { useHeadingFont } from "../../theme/useHeadingFont";
 
-const TABS = ["My Crops", "Buyer Leads", "Farm Profile", "Notifications"];
+const TABS = ["ನನ್ನ ಬೆಳೆಗಳು", "ಖರೀದಿದಾರರ ವಿನಂತಿ", "ಫಾರ್ಮ್ ಪ್ರೊಫೈಲ್", "ಸೂಚನೆಗಳು"];
 
 const STATUS_COLORS = {
   pending: colors.accent,
@@ -41,8 +44,10 @@ const STATUS_COLORS = {
 const CERTIFICATIONS = ["organic", "fair-trade", "gap"];
 
 export default function FarmerDashboardScreen({ navigation }) {
+  const t = useT();
+  const h1Font = useHeadingFont("h1");
   const { user, setUser, clearAuth } = useAuthStore();
-  const [tab, setTab] = useState("My Crops");
+  const [tab, setTab] = useState(TABS[0]);
 
   const [listings, setListings] = useState([]);
   const [listingsLoading, setListingsLoading] = useState(true);
@@ -117,7 +122,7 @@ export default function FarmerDashboardScreen({ navigation }) {
             <Text style={styles.aiToolsBtnText}>🤖 AI Tools</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={async () => { await signOutUser(); clearAuth(); }}>
-            <Text style={styles.logout}>Logout</Text>
+            <Text style={styles.logout}>{t("ಲಾಗ್‌ಔಟ್")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -127,19 +132,19 @@ export default function FarmerDashboardScreen({ navigation }) {
         contentContainerStyle={{ paddingBottom: spacing.xl }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[colors.primary]} tintColor={colors.primary} />}
       >
-        <Text style={styles.title}>Farmer Dashboard</Text>
-        <Text style={styles.subtitle}>Manage crops, respond to buyers, track revenue.</Text>
+        <Text style={[styles.title, { fontFamily: h1Font }]}>{t("ರೈತ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್")}</Text>
+        <Text style={styles.subtitle}>{t("ಬೆಳೆ ನಿರ್ವಹಿಸಿ, ಖರೀದಿದಾರರಿಗೆ ಉತ್ತರಿಸಿ, ಆದಾಯ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ.")}</Text>
 
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
             <Text style={styles.statIcon}>🌱</Text>
             <Text style={styles.statValue}>{listings.length}</Text>
-            <Text style={styles.statCardSub}>Crop Listings</Text>
+            <Text style={styles.statCardSub}>{t("ಬೆಳೆ ಪಟ್ಟಿಗಳು")}</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statIcon}>👥</Text>
             <Text style={styles.statValue}>{requests.length}</Text>
-            <Text style={styles.statCardSub}>Buyer Leads</Text>
+            <Text style={styles.statCardSub}>{t("ಖರೀದಿದಾರರ ವಿನಂತಿ")}</Text>
           </View>
           <View style={styles.statCard}>
             <Text style={styles.statIcon}>💳</Text>
@@ -149,19 +154,19 @@ export default function FarmerDashboardScreen({ navigation }) {
           <View style={styles.statCard}>
             <Text style={styles.statIcon}>🔔</Text>
             <Text style={styles.statValue}>{acceptedRequests.length}</Text>
-            <Text style={styles.statCardSub}>Accepted</Text>
+            <Text style={styles.statCardSub}>{t("ಒಪ್ಪಿಗೆ ಪಡೆದದ್ದು")}</Text>
           </View>
         </View>
 
         <View style={styles.tabRow}>
-          {TABS.map((t) => (
-            <TouchableOpacity key={t} style={[styles.tab, tab === t && styles.tabActive]} onPress={() => setTab(t)}>
-              <Text style={[styles.tabText, tab === t && styles.tabTextActive]} numberOfLines={1}>{t}</Text>
+          {TABS.map((tb) => (
+            <TouchableOpacity key={tb} style={[styles.tab, tab === tb && styles.tabActive]} onPress={() => setTab(tb)}>
+              <Text style={[styles.tabText, tab === tb && styles.tabTextActive]} numberOfLines={1}>{t(tb)}</Text>
             </TouchableOpacity>
           ))}
         </View>
 
-        {tab === "My Crops" && (
+        {tab === TABS[0] && (
           <MyCropsTab
             listings={listings}
             loading={listingsLoading}
@@ -170,7 +175,7 @@ export default function FarmerDashboardScreen({ navigation }) {
           />
         )}
 
-        {tab === "Buyer Leads" && (
+        {tab === TABS[1] && (
           <BuyerLeadsTab
             requests={requests}
             loading={requestsLoading}
@@ -180,15 +185,16 @@ export default function FarmerDashboardScreen({ navigation }) {
           />
         )}
 
-        {tab === "Farm Profile" && <FarmProfileTab user={user} setUser={setUser} />}
+        {tab === TABS[2] && <FarmProfileTab user={user} setUser={setUser} />}
 
-        {tab === "Notifications" && <NotificationsTab requests={requests} loading={requestsLoading} />}
+        {tab === TABS[3] && <NotificationsTab requests={requests} loading={requestsLoading} />}
       </ScrollView>
     </View>
   );
 }
 
 function MyCropsTab({ listings, loading, error, onAdd }) {
+  const t = useT();
   if (loading) return <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.xl }} />;
   return (
     <View>
@@ -198,10 +204,10 @@ function MyCropsTab({ listings, loading, error, onAdd }) {
         </View>
       )}
       <TouchableOpacity style={styles.addBtn} onPress={onAdd}>
-        <Text style={styles.addBtnText}>+ Add Crop Listing</Text>
+        <Text style={styles.addBtnText}>{t("+ ಬೆಳೆ ಸೇರಿಸಿ")}</Text>
       </TouchableOpacity>
       {listings.length === 0 ? (
-        <Text style={styles.emptyText}>No crop listings yet. Add one for buyers to find.</Text>
+        <Text style={styles.emptyText}>{t("ಇನ್ನೂ ಯಾವುದೇ ಬೆಳೆ ಪಟ್ಟಿ ಇಲ್ಲ. ಖರೀದಿದಾರರಿಗೆ ಒಂದನ್ನು ಸೇರಿಸಿ.")}</Text>
       ) : (
         listings.map((item) => (
           <View key={item.id} style={styles.listCard}>
@@ -223,6 +229,7 @@ function MyCropsTab({ listings, loading, error, onAdd }) {
 }
 
 function BuyerLeadsTab({ requests, loading, error, updatingId, onRespond }) {
+  const t = useT();
   if (loading) return <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.xl }} />;
   return (
     <View>
@@ -232,7 +239,7 @@ function BuyerLeadsTab({ requests, loading, error, updatingId, onRespond }) {
         </View>
       )}
       {requests.length === 0 ? (
-        <Text style={styles.emptyText}>No buyer requests yet.</Text>
+        <Text style={styles.emptyText}>{t("ಇನ್ನೂ ಯಾವುದೇ ಖರೀದಿದಾರರ ವಿನಂತಿ ಇಲ್ಲ.")}</Text>
       ) : (
         requests.map((item) => (
           <View key={item.id} style={styles.listCard}>
@@ -247,14 +254,14 @@ function BuyerLeadsTab({ requests, loading, error, updatingId, onRespond }) {
                   onPress={() => onRespond(item.id, "accepted")}
                   disabled={updatingId === item.id}
                 >
-                  <Text style={styles.acceptBtnText}>Accept</Text>
+                  <Text style={styles.acceptBtnText}>{t("ಒಪ್ಪಿಗೆ")}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.smallBtn, styles.declineBtn]}
                   onPress={() => onRespond(item.id, "rejected")}
                   disabled={updatingId === item.id}
                 >
-                  <Text style={styles.declineBtnText}>Decline</Text>
+                  <Text style={styles.declineBtnText}>{t("ತಿರಸ್ಕರಿಸಿ")}</Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -270,6 +277,7 @@ function BuyerLeadsTab({ requests, loading, error, updatingId, onRespond }) {
 }
 
 function FarmProfileTab({ user, setUser }) {
+  const t = useT();
   const [farmName, setFarmName] = useState(user?.farmName || "");
   const [village, setVillage] = useState(user?.village || "");
   const [state, setState] = useState(user?.state || "");
@@ -323,10 +331,10 @@ function FarmProfileTab({ user, setUser }) {
 
   return (
     <View style={styles.formCard}>
-      <Text style={styles.fieldLabel}>Farm Name</Text>
+      <Text style={styles.fieldLabel}>{t("ಫಾರ್ಮ್ ಹೆಸರು")}</Text>
       <TextInput style={styles.input} value={farmName} onChangeText={setFarmName} placeholderTextColor={colors.textMuted} />
 
-      <Text style={styles.fieldLabel}>Village</Text>
+      <Text style={styles.fieldLabel}>{t("ಗ್ರಾಮ")}</Text>
       <TextInput style={styles.input} value={village} onChangeText={setVillage} placeholderTextColor={colors.textMuted} />
 
       <Text style={styles.fieldLabel}>State</Text>
@@ -335,7 +343,7 @@ function FarmProfileTab({ user, setUser }) {
       <Text style={styles.fieldLabel}>District</Text>
       <TextInput style={styles.input} value={district} onChangeText={setDistrict} placeholderTextColor={colors.textMuted} />
 
-      <Text style={styles.fieldLabel}>Size (acres)</Text>
+      <Text style={styles.fieldLabel}>{t("ಗಾತ್ರ (ಎಕರೆ)")}</Text>
       <TextInput style={styles.input} value={sizeAcres} onChangeText={setSizeAcres} keyboardType="numeric" placeholderTextColor={colors.textMuted} />
 
       <View style={styles.row}>
@@ -349,16 +357,16 @@ function FarmProfileTab({ user, setUser }) {
         </View>
       </View>
 
-      <Text style={styles.fieldLabel}>Farm photo</Text>
+      <Text style={styles.fieldLabel}>{t("ಫಾರ್ಮ್ ಫೋಟೋ")}</Text>
       <TouchableOpacity style={styles.photoUpload} onPress={handlePickPhoto}>
         {photoUri ? (
           <Image source={{ uri: photoUri }} style={styles.photoPreview} />
         ) : (
-          <Text style={styles.photoUploadText}>⬆ Upload farm photo</Text>
+          <Text style={styles.photoUploadText}>{t("⬆ ಫಾರ್ಮ್ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ")}</Text>
         )}
       </TouchableOpacity>
 
-      <Text style={styles.fieldLabel}>Description</Text>
+      <Text style={styles.fieldLabel}>{t("ವಿವರಣೆ")}</Text>
       <TextInput
         style={[styles.input, styles.textarea]}
         value={description}
@@ -368,7 +376,7 @@ function FarmProfileTab({ user, setUser }) {
         placeholderTextColor={colors.textMuted}
       />
 
-      <Text style={styles.fieldLabel}>Certifications</Text>
+      <Text style={styles.fieldLabel}>{t("ಪ್ರಮಾಣೀಕರಣಗಳು")}</Text>
       <View style={styles.certRow}>
         {CERTIFICATIONS.map((cert) => (
           <TouchableOpacity
@@ -382,16 +390,17 @@ function FarmProfileTab({ user, setUser }) {
       </View>
 
       <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={saving}>
-        {saving ? <ActivityIndicator color={colors.white} /> : <Text style={styles.saveBtnText}>Save Farm Profile</Text>}
+        {saving ? <ActivityIndicator color={colors.white} /> : <Text style={styles.saveBtnText}>{t("ಫಾರ್ಮ್ ಪ್ರೊಫೈಲ್ ಉಳಿಸಿ")}</Text>}
       </TouchableOpacity>
     </View>
   );
 }
 
 function NotificationsTab({ requests, loading }) {
+  const t = useT();
   if (loading) return <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.xl }} />;
   if (requests.length === 0) {
-    return <Text style={styles.emptyText}>No notifications yet.</Text>;
+    return <Text style={styles.emptyText}>{t("ಇನ್ನೂ ಯಾವುದೇ ಸೂಚನೆಗಳಿಲ್ಲ.")}</Text>;
   }
   return (
     <View>
@@ -426,7 +435,7 @@ const styles = StyleSheet.create({
   title: { ...typography.h1, fontSize: 26, color: colors.textPrimary },
   subtitle: { ...typography.body, color: colors.textMuted, marginTop: spacing.xs, marginBottom: spacing.lg },
   statsGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between", marginBottom: spacing.lg },
-  statCard: { width: "48%", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm, minHeight: 100, justifyContent: "center" },
+  statCard: { width: "48%", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm, minHeight: 100, justifyContent: "center", ...cardShadow },
   statIcon: { fontSize: 22, marginBottom: spacing.xs },
   statValue: { ...typography.h1, fontSize: 26, color: colors.textPrimary },
   statCardSub: { ...typography.caption, color: colors.textMuted, marginTop: 4 },
@@ -439,7 +448,7 @@ const styles = StyleSheet.create({
   errorBannerText: { ...typography.caption, color: colors.error },
   addBtn: { backgroundColor: colors.accent, borderRadius: spacing.buttonRadius, paddingVertical: spacing.md, alignItems: "center", marginBottom: spacing.md, minHeight: spacing.minTouchTarget, justifyContent: "center" },
   addBtnText: { color: colors.white, fontWeight: "700" },
-  listCard: { flexDirection: "row", alignItems: "center", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm },
+  listCard: { flexDirection: "row", alignItems: "center", backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, marginBottom: spacing.sm, ...cardShadow },
   cardTitle: { ...typography.body, fontWeight: "700", color: colors.textPrimary },
   cardDetail: { ...typography.caption, color: colors.textMuted, marginTop: 2 },
   statusBadge: { borderRadius: 16, paddingHorizontal: spacing.md, paddingVertical: spacing.xs },
@@ -451,7 +460,7 @@ const styles = StyleSheet.create({
   declineBtn: { borderWidth: 1, borderColor: colors.error },
   declineBtnText: { color: colors.error, fontWeight: "700", fontSize: 12 },
   emptyText: { ...typography.body, color: colors.textMuted, textAlign: "center", marginTop: spacing.xl },
-  formCard: { backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md },
+  formCard: { backgroundColor: colors.white, borderRadius: spacing.cardRadius, padding: spacing.md, ...cardShadow },
   fieldLabel: { ...typography.caption, color: colors.textPrimary, fontWeight: "600", marginTop: spacing.md, marginBottom: spacing.xs },
   input: { borderWidth: 1, borderColor: colors.border, borderRadius: spacing.buttonRadius, padding: spacing.md, ...typography.body, color: colors.textPrimary },
   textarea: { minHeight: 70, textAlignVertical: "top" },

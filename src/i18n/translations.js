@@ -15,6 +15,81 @@ export const en = {
   "ಮಾರಾಟಗಾರ": "Vendor",
   "ಮುಂದುವರಿಸಿ": "Continue",
 
+  // --- LandingScreen ---
+  "ಮಣ್ಣಿನಲ್ಲಿ ಬೇರೂರಿದೆ.": "Rooted in soil.",
+  "ಭಾರತಕ್ಕಾಗಿ ಬೆಳೆದಿದೆ.": "Grown for India.",
+  "ಮಣ್ಣಿನಿಂದ ಅಂಗಡಿಯವರೆಗೆ — ಭಾರತದ ವಿಶ್ವಾಸಾರ್ಹ ಕೃಷಿ ವಾಣಿಜ್ಯ ವೇದಿಕೆ. ಬೀಜ, ಯಂತ್ರ, ಗೊಬ್ಬರ ಖರೀದಿಸಿ. ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ರೆಸ್ಟೋರೆಂಟ್, ರಫ್ತುದಾರರು ಮತ್ತು ಚಿಲ್ಲರೆ ವ್ಯಾಪಾರಿಗಳಿಗೆ ನೇರವಾಗಿ ಮಾರಾಟ ಮಾಡಿ.":
+    "From soil to shelf — the trusted agri commerce platform for India. Buy seeds, machinery, fertilizers. Sell your harvest directly to restaurants, exporters & retailers.",
+  "ಮಾರುಕಟ್ಟೆ ನೋಡಿ": "Browse Marketplace",
+  "ರೈತರಾಗಿ ಸೇರಿ": "Join as Farmer",
+  "ಈಗಾಗಲೇ ಖಾತೆ ಇದೆಯೇ? ಲಾಗಿನ್ ಮಾಡಿ": "Already have an account? Log in",
+  "ರೈತರು": "Farmers",
+  "ವ್ಯಾಪಾರವಾಗಿದೆ": "Traded",
+  "ತೃಪ್ತರು": "Satisfied",
+
+  // --- ProblemSolutionScreen ---
+  "ULUME ಏಕೆ ಇದೆ": "WHY ULUME EXISTS",
+  "ಕೃಷಿ ಎಂದರೆ ಮಧ್ಯವರ್ತಿಗಳಿಗೆ ಸೋಲುವುದಲ್ಲ.": "Farming shouldn't mean losing to the middleman.",
+  "ಇಂದಿನ ಸಮಸ್ಯೆ": "The problem today",
+  "ULUME ಏನು ನೀಡುತ್ತದೆ": "What ULUME provides",
+  "ಮಧ್ಯವರ್ತಿಗಳು ಬೆಳೆ ಖರೀದಿದಾರರನ್ನು ತಲುಪುವ ಮೊದಲೇ ರೈತರ ಲಾಭದ 30–40% ತೆಗೆದುಕೊಳ್ಳುತ್ತಾರೆ":
+    "Middlemen eat 30–40% of a farmer's profit before produce ever reaches a buyer",
+  "ಬೆಳೆಗೆ ನ್ಯಾಯಯುತ, ನೈಜ-ಸಮಯದ ಮಾರುಕಟ್ಟೆ ಬೆಲೆ ಗೊತ್ತಾಗುವುದಿಲ್ಲ":
+    "No visibility into fair, real-time market prices for their crop",
+  "ಹತ್ತಿರದಲ್ಲಿ ಗುಣಮಟ್ಟದ ಬೀಜ, ಗೊಬ್ಬರ ಮತ್ತು ಯಂತ್ರೋಪಕರಣಗಳ ಲಭ್ಯತೆ ಕಡಿಮೆ":
+    "Limited access to quality seeds, fertilizers & machinery nearby",
+  "ರೆಸ್ಟೋರೆಂಟ್, ಚಿಲ್ಲರೆ ವ್ಯಾಪಾರಿಗಳು ಮತ್ತು ರಫ್ತುದಾರರಿಗೆ ನೇರ ಸಂಪರ್ಕವಿಲ್ಲ":
+    "No direct channel to restaurants, retailers & exporters",
+  "ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ಪರಿಶೀಲಿತ ಖರೀದಿದಾರರಿಗೆ ನೇರವಾಗಿ ಮಾರಿ — ಮಧ್ಯವರ್ತಿಗಳಿಲ್ಲ":
+    "Sell your harvest directly to verified buyers — no middlemen",
+  "ಪರಿಶೀಲಿತ ಸ್ಥಳೀಯ ಮಾರಾಟಗಾರರಿಂದ ಕೃಷಿ-ಸಾಮಗ್ರಿ ಖರೀದಿಸಿ":
+    "Shop agri-inputs from trusted, verified local vendors",
+  "UPI ಅಥವಾ ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ ಪಾವತಿಯೊಂದಿಗೆ ಪಾರದರ್ಶಕ ಬೆಲೆ, ಪೂರ್ಣ ಆರ್ಡರ್ ಟ್ರ್ಯಾಕಿಂಗ್":
+    "Transparent pricing with UPI or Cash on Delivery, and full order tracking",
+  "ನಿಮ್ಮ ಫಾರ್ಮ್‌ಗೆ ಒಂದೇ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ — ಬೆಳೆ ಪಟ್ಟಿ, ಖರೀದಿದಾರರ ವಿನಂತಿ, ಆದಾಯ":
+    "One dashboard for your farm — crop listings, buyer leads, and revenue",
+
+  // --- FarmerDashboardScreen ---
+  "ರೈತ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್": "Farmer Dashboard",
+  "ಬೆಳೆ ನಿರ್ವಹಿಸಿ, ಖರೀದಿದಾರರಿಗೆ ಉತ್ತರಿಸಿ, ಆದಾಯ ಟ್ರ್ಯಾಕ್ ಮಾಡಿ.": "Manage crops, respond to buyers, track revenue.",
+  "ನನ್ನ ಬೆಳೆಗಳು": "My Crops",
+  "ಖರೀದಿದಾರರ ವಿನಂತಿ": "Buyer Leads",
+  "ಫಾರ್ಮ್ ಪ್ರೊಫೈಲ್": "Farm Profile",
+  "ಸೂಚನೆಗಳು": "Notifications",
+  "ಬೆಳೆ ಪಟ್ಟಿಗಳು": "Crop Listings",
+  "ಒಪ್ಪಿಗೆ ಪಡೆದದ್ದು": "Accepted",
+  "+ ಬೆಳೆ ಸೇರಿಸಿ": "+ Add Crop Listing",
+  "ಇನ್ನೂ ಯಾವುದೇ ಬೆಳೆ ಪಟ್ಟಿ ಇಲ್ಲ. ಖರೀದಿದಾರರಿಗೆ ಒಂದನ್ನು ಸೇರಿಸಿ.": "No crop listings yet. Add one for buyers to find.",
+  "ಇನ್ನೂ ಯಾವುದೇ ಖರೀದಿದಾರರ ವಿನಂತಿ ಇಲ್ಲ.": "No buyer requests yet.",
+  "ಒಪ್ಪಿಗೆ": "Accept",
+  "ತಿರಸ್ಕರಿಸಿ": "Decline",
+  "ಫಾರ್ಮ್ ಪ್ರೊಫೈಲ್ ಉಳಿಸಿ": "Save Farm Profile",
+  "ಫಾರ್ಮ್ ಹೆಸರು": "Farm Name",
+  "ಗಾತ್ರ (ಎಕರೆ)": "Size (acres)",
+  "ಫಾರ್ಮ್ ಫೋಟೋ": "Farm photo",
+  "⬆ ಫಾರ್ಮ್ ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ": "⬆ Upload farm photo",
+  "ವಿವರಣೆ": "Description",
+  "ಪ್ರಮಾಣೀಕರಣಗಳು": "Certifications",
+  "ಇನ್ನೂ ಯಾವುದೇ ಸೂಚನೆಗಳಿಲ್ಲ.": "No notifications yet.",
+
+  // --- SignupScreen / LoginScreen ---
+  "ರೈತರಾಗಿ ಸೇರಿಕೊಳ್ಳಿ": "Join as a Farmer",
+  "ನಿಮ್ಮ ಬೆಳೆಯನ್ನು ಪಟ್ಟಿ ಮಾಡಿ, ಖರೀದಿದಾರರನ್ನು ನೇರವಾಗಿ ತಲುಪಿ.": "List your harvest and reach buyers directly.",
+  "ಖಾತೆ ರಚಿಸಿ": "Create account",
+  "ಪ್ರಾರಂಭಿಸಲು ಒಂದು ಪಾತ್ರ ಆಯ್ಕೆಮಾಡಿ.": "Pick a role to get started.",
+  "ಪೂರ್ಣ ಹೆಸರು": "Full Name",
+  "ಫೋನ್": "Phone",
+  "ಇಮೇಲ್": "Email",
+  "ಪಾಸ್‌ವರ್ಡ್": "Password",
+  "ರಾಜ್ಯ": "State",
+  "ಜಿಲ್ಲೆ": "District",
+  "ಖಾತೆ ಈಗಾಗಲೇ ಇದೆಯೇ? ಲಾಗಿನ್ ಮಾಡಿ": "Already have an account? Log in",
+  "ಮತ್ತೆ ಸ್ವಾಗತ": "Welcome back",
+  "ಮುಂದುವರಿಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ.": "Sign in to continue.",
+  "ಸೈನ್ ಇನ್": "Sign In",
+  "ಖಾತೆ ಇಲ್ಲವೇ? ಒಂದನ್ನು ರಚಿಸಿ": "Don't have an account? Create one",
+  "ಡೆಮೊ ಖಾತೆ ಪ್ರಯತ್ನಿಸಿ:": "Try a demo account:",
+
   // --- VoiceButton ---
   "ಮಾತಾಡಿ": "Speak",
   "ಕೇಳ್ತಿದ್ದೇನೆ...": "Listening...",
