@@ -33,19 +33,31 @@ service cloud.firestore {
     }
 
     // --- Products ---
+    // Ranking/trust signals (orderCount, rating, totalRatings, isPromoted)
+    // are never written by client code today — only set once at creation —
+    // so a seller is blocked from touching them on update, preventing
+    // self-inflated rankings even though nothing currently relies on this.
     match /products/{productId} {
       allow read: if isSignedIn();
       allow create: if isAdmin() || (isSignedIn() && request.resource.data.sellerId == request.auth.uid);
-      allow update, delete: if isAdmin() || (isSignedIn() && resource.data.sellerId == request.auth.uid);
+      allow update: if isAdmin() ||
+        (isSignedIn() && resource.data.sellerId == request.auth.uid &&
+         !request.resource.data.diff(resource.data).affectedKeys().hasAny(["orderCount", "rating", "totalRatings", "isPromoted", "sellerId"]));
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.sellerId == request.auth.uid);
     }
 
     // --- Orders ---
+    // Only the app's actual write pattern is allowed: the seller (never the
+    // farmer) transitions status via updateOrderStatus(), which touches only
+    // these four fields — pricing/items/farmerId are immutable after create
+    // so neither party can rewrite the amount owed after the fact.
     match /orders/{orderId} {
       allow read: if isAdmin() ||
         (isSignedIn() && (resource.data.farmerId == request.auth.uid || resource.data.sellerId == request.auth.uid));
       allow create: if isAdmin() || (isSignedIn() && request.resource.data.farmerId == request.auth.uid);
       allow update: if isAdmin() ||
-        (isSignedIn() && (resource.data.farmerId == request.auth.uid || resource.data.sellerId == request.auth.uid));
+        (isSignedIn() && resource.data.sellerId == request.auth.uid &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status", "statusHistory", "deliveredAt", "paymentStatus"]));
     }
 
     // --- Settlements (written only by Cloud Functions via Admin SDK) ---
@@ -68,21 +80,31 @@ service cloud.firestore {
     }
 
     // --- Procurement requests (buyer <-> farmer) ---
+    // Accept/reject is the farmer's decision alone — a buyer must not be able
+    // to self-approve their own request, and neither party may rewrite the
+    // quantity/price after the farmer has already ruled on it once.
     match /procurementRequests/{requestId} {
       allow read: if isAdmin() ||
         (isSignedIn() && (resource.data.farmerId == request.auth.uid || resource.data.buyerId == request.auth.uid));
       allow create: if isAdmin() || (isSignedIn() && request.resource.data.buyerId == request.auth.uid);
       allow update: if isAdmin() ||
-        (isSignedIn() && (resource.data.farmerId == request.auth.uid || resource.data.buyerId == request.auth.uid));
+        (isSignedIn() && resource.data.farmerId == request.auth.uid &&
+         resource.data.status == "pending" &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"]) &&
+         request.resource.data.status in ["accepted", "rejected"]);
     }
 
     // --- Order ID counters ---
     // Any signed-in user may bump the sequence via the transaction in
-    // placeOrder() (src/services/firebase/firestore.js). The counter only
-    // controls the human-readable ULM-YYYY-NNNNN suffix, so it carries no
-    // sensitive data and worst case a bad actor skips a number.
+    // placeOrder() (src/services/firebase/firestore.js), which only ever
+    // writes a single numeric `count` field — constrained here so a bad
+    // actor can't overwrite the doc with arbitrary data or a non-numeric
+    // value and break order-ID generation for everyone.
     match /counters/{counterId} {
-      allow read, write: if isSignedIn();
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() &&
+        request.resource.data.keys().hasOnly(["count"]) &&
+        request.resource.data.count is int;
     }
 
     // --- Referral credit ledger (internal, Admin SDK only) ---
