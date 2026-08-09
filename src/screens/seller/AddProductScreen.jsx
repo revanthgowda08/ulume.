@@ -75,6 +75,13 @@ export default function AddProductScreen({ navigation }) {
       Alert.alert(t("ಎಲ್ಲಾ ಕ್ಷೇತ್ರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ"));
       return;
     }
+    const priceNum = Number(price);
+    const stockNum = Number(stock);
+    const mrpNum = mrp ? Number(mrp) : priceNum;
+    if (!Number.isFinite(priceNum) || !Number.isFinite(stockNum) || !Number.isFinite(mrpNum)) {
+      Alert.alert("Invalid number", "Price, MRP, and Stock must be numbers.");
+      return;
+    }
     setSaving(true);
     try {
       const geohash = seller?.location ? getGeohash(seller.location.latitude, seller.location.longitude) : null;
@@ -89,9 +96,9 @@ export default function AddProductScreen({ navigation }) {
         name,
         nameKannada,
         category,
-        price: Number(price),
-        mrp: Number(mrp) || Number(price),
-        stock: Number(stock),
+        price: priceNum,
+        mrp: mrpNum,
+        stock: stockNum,
         unit,
         tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
       });
@@ -124,7 +131,7 @@ export default function AddProductScreen({ navigation }) {
       ]);
     } catch (e) {
       console.error("createProduct failed:", e);
-      Alert.alert(t("ದೋಷ"), t("ಉಳಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
+      Alert.alert(t("ದೋಷ"), `${t("ಉಳಿಸಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.")}\n\n${e.message || e.code || String(e)}`);
     } finally {
       setSaving(false);
     }
