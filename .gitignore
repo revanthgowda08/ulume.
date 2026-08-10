@@ -12,10 +12,10 @@ npm-debug.*
 *.orig.*
 .env
 .env.local
-# google-services.json is intentionally tracked (see README) — it's client
-# identifying info baked into every built APK, not a secret credential, and
-# EAS Build needs it present in the repo to produce a working build.
-GoogleService-Info.plist
+# google-services.json / GoogleService-Info.plist are intentionally tracked
+# (see README) — they're client identifying info baked into every built app,
+# not a secret credential, and EAS Build needs them present in the repo to
+# produce a working build.
 firebase-adminsdk*.json
 scripts/serviceAccountKey.json
 .DS_Store

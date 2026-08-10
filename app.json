@@ -29,6 +29,18 @@
         "WRITE_EXTERNAL_STORAGE"
       ]
     },
+    "ios": {
+      "bundleIdentifier": "com.ulume.app",
+      "buildNumber": "1",
+      "supportsTablet": false,
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "NSCameraUsageDescription": "ULUME needs camera access to photograph crops and products.",
+        "NSPhotoLibraryUsageDescription": "ULUME needs access to your photos to upload product images.",
+        "NSMicrophoneUsageDescription": "ULUME needs microphone access for voice search and voice commands.",
+        "NSLocationWhenInUseUsageDescription": "ULUME needs your location to show nearby sellers."
+      }
+    },
     "plugins": [
       "@react-native-firebase/app",
       "expo-font",
