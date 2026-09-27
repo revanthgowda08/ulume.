@@ -254,4 +254,35 @@ export const en = {
   "ಪಾವತಿ ಇತಿಹಾಸ": "Payout history",
   "ಪಾವತಿ ಆಗಿದೆ": "Paid",
   "ಇನ್ನೂ ಯಾವುದೇ ಪಾವತಿ ಇಲ್ಲ": "No payouts yet",
+
+  // --- FarmingTipsScreen ---
+  "ಸಲಹೆಗಳು": "Tips",
+  "ಕೃಷಿ ಸಲಹೆಗಳು": "Farming Tips",
+  "ಮಣ್ಣಿನ ಆರೋಗ್ಯ": "Soil Health",
+  "ನೀರಾವರಿ": "Irrigation",
+  "ಕೀಟ ನಿಯಂತ್ರಣ": "Pest Control",
+  "ಸಾವಯವ ಕೃಷಿ": "Organic Farming",
+  "ಕೊಯ್ಲಿನ ನಂತರ": "Post-Harvest",
+  "ಪ್ರತಿ 2-3 ವರ್ಷಕ್ಕೊಮ್ಮೆ ಮಣ್ಣಿನ ಪರೀಕ್ಷೆ ಮಾಡಿಸಿ ಪೋಷಕಾಂಶದ ಕೊರತೆ ತಿಳಿಯಿರಿ":
+    "Get your soil tested every 2–3 years to know nutrient gaps",
+  "ಬೆಳೆ ಸರದಿ ಪದ್ಧತಿ ಅನುಸರಿಸಿ ಮಣ್ಣಿನ ಫಲವತ್ತತೆ ಕಾಪಾಡಿ": "Practice crop rotation to maintain soil fertility",
+  "ಹಸಿರೆಲೆ ಗೊಬ್ಬರ ಬೆಳೆಸಿ ಮಣ್ಣಿನ ರಚನೆ ಸುಧಾರಿಸಿ": "Grow green manure crops to improve soil structure",
+  "ಹನಿ ನೀರಾವರಿ ಬಳಸಿ 30-50% ನೀರು ಉಳಿಸಿ": "Use drip irrigation to save 30–50% water",
+  "ಬೆಳಿಗ್ಗೆ ಅಥವಾ ಸಂಜೆ ನೀರು ಹಾಯಿಸಿ ಆವಿಯಾಗುವಿಕೆ ಕಡಿಮೆ ಮಾಡಿ":
+    "Water early morning or evening to reduce evaporation loss",
+  "ಮಣ್ಣಿನ ತೇವಾಂಶ ನೋಡಿಯೇ ನೀರು ಕೊಡಿ, ವೇಳಾಪಟ್ಟಿ ಮಾತ್ರ ನಂಬಬೇಡಿ":
+    "Check soil moisture before watering — don't rely on a fixed schedule alone",
+  "ಬೆಳೆಯನ್ನು ವಾರಕ್ಕೊಮ್ಮೆ ಪರಿಶೀಲಿಸಿ ಆರಂಭಿಕ ಹಂತದಲ್ಲೇ ಕೀಟ ಪತ್ತೆ ಮಾಡಿ":
+    "Inspect your crop weekly to catch pests early",
+  "ಬೇವಿನ ಎಣ್ಣೆಯಂತಹ ಜೈವಿಕ ಕೀಟನಾಶಕ ಮೊದಲು ಪ್ರಯತ್ನಿಸಿ": "Try a biological pesticide like neem oil before chemical sprays",
+  "ಬಲೆ ಬೆಳೆ ನೆಟ್ಟು ಕೀಟಗಳನ್ನು ಮುಖ್ಯ ಬೆಳೆಯಿಂದ ದೂರವಿಡಿ": "Plant trap crops to draw pests away from your main crop",
+  "ಎರೆಹುಳು ಗೊಬ್ಬರ ತಯಾರಿಸಿ ರಾಸಾಯನಿಕ ಗೊಬ್ಬರ ಬಳಕೆ ಕಡಿಮೆ ಮಾಡಿ":
+    "Make vermicompost to cut down on chemical fertilizer use",
+  "ಮಿಶ್ರ ಬೆಳೆ ಪದ್ಧತಿಯಿಂದ ಕೀಟ ಬಾಧೆ ಮತ್ತು ಅಪಾಯ ಕಡಿಮೆ ಮಾಡಿ": "Intercropping lowers pest risk and spreads out income",
+  "ಸಾವಯವ ಪ್ರಮಾಣೀಕರಣ ಪಡೆದರೆ ಉತ್ತಮ ಬೆಲೆ ಸಿಗುತ್ತದೆ": "Organic certification can fetch a better price for your produce",
+  "ಕೊಯ್ಲು ಮಾಡಿದ ತಕ್ಷಣ ನೆರಳಿನಲ್ಲಿ ಒಣಗಿಸಿ ಕೊಳೆಯುವಿಕೆ ತಡೆಯಿರಿ":
+    "Dry produce in shade right after harvest to prevent spoilage",
+  "ಸ್ವಚ್ಛ, ಗಾಳಿಯಾಡುವ ಚೀಲಗಳಲ್ಲಿ ಸಂಗ್ರಹಿಸಿ": "Store in clean, breathable sacks or containers",
+  "ಗ್ರೇಡಿಂಗ್ ಮತ್ತು ವಿಂಗಡಣೆ ಮಾಡಿ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಉತ್ತಮ ಬೆಲೆ ಪಡೆಯಿರಿ":
+    "Grade and sort produce by quality to get better market prices",
 };

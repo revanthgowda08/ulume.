@@ -118,6 +118,9 @@ export default function FarmerDashboardScreen({ navigation }) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>ULUME</Text>
         <View style={styles.headerActions}>
+          <TouchableOpacity onPress={() => navigation.navigate("FarmingTips")} style={styles.aiToolsBtn}>
+            <Text style={styles.aiToolsBtnText}>📚 {t("ಸಲಹೆಗಳು")}</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate("AITools")} style={styles.aiToolsBtn}>
             <Text style={styles.aiToolsBtnText}>🤖 AI Tools</Text>
           </TouchableOpacity>

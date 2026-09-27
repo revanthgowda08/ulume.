@@ -18,6 +18,7 @@ import AddCropListingScreen from "../screens/farmer/AddCropListingScreen";
 import AIToolsScreen from "../screens/farmer/AIToolsScreen";
 import CropAdvisorScreen from "../screens/farmer/CropAdvisorScreen";
 import DiseaseDetectionScreen from "../screens/farmer/DiseaseDetectionScreen";
+import FarmingTipsScreen from "../screens/farmer/FarmingTipsScreen";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -30,6 +31,7 @@ function HomeStack() {
       <Stack.Screen name="AITools" component={AIToolsScreen} />
       <Stack.Screen name="CropAdvisor" component={CropAdvisorScreen} />
       <Stack.Screen name="DiseaseDetection" component={DiseaseDetectionScreen} />
+      <Stack.Screen name="FarmingTips" component={FarmingTipsScreen} />
     </Stack.Navigator>
   );
 }
