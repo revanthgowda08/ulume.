@@ -1,6 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
-import { collection, onSnapshot, orderBy, query, doc, updateDoc, addDoc, serverTimestamp, where, getDocs, limit } from "firebase/firestore";
+import {
+  collection, onSnapshot, orderBy, query, doc, updateDoc, setDoc, runTransaction,
+  serverTimestamp, where, getDocs, limit,
+} from "firebase/firestore";
 import { db } from "../firebase/config";
+import { PageSpinner } from "../components/Spinner";
+
+// Mirrors generateOrderId() in src/services/firebase/firestore.js so
+// admin-created orders get the same ULM-YYYY-NNNNN scheme and share the
+// counter with orders placed from the mobile app.
+async function generateOrderId() {
+  const year = new Date().getFullYear();
+  const counterRef = doc(db, "counters", `orders-${year}`);
+  return runTransaction(db, async (tx) => {
+    const counterDoc = await tx.get(counterRef);
+    const next = (counterDoc.exists() ? counterDoc.data().count : 0) + 1;
+    tx.set(counterRef, { count: next }, { merge: true });
+    return `ULM-${year}-${String(next).padStart(5, "0")}`;
+  });
+}
 
 const STATUS_FILTERS = ["all", "placed", "confirmed", "out_for_delivery", "delivered", "cancelled", "returned"];
 
@@ -55,23 +73,35 @@ function ManualOrderModal({ onClose }) {
   const [products, setProducts] = useState([]);
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [saving, setSaving] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    getDocs(collection(db, "sellers")).then((snap) =>
-      setSellers(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-    );
+    getDocs(collection(db, "sellers"))
+      .then((snap) => setSellers(snap.docs.map((d) => ({ id: d.id, ...d.data() }))))
+      .catch(() => setError("Couldn't load sellers. Please try again."));
   }, []);
 
   useEffect(() => {
     if (!selectedSellerId) return;
-    getDocs(query(collection(db, "products"), where("sellerId", "==", selectedSellerId))).then((snap) =>
-      setProducts(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
-    );
+    getDocs(query(collection(db, "products"), where("sellerId", "==", selectedSellerId)))
+      .then((snap) => setProducts(snap.docs.map((d) => ({ id: d.id, ...d.data() }))))
+      .catch(() => setError("Couldn't load products for this seller."));
   }, [selectedSellerId]);
 
   const handleSearchFarmer = async () => {
-    const snap = await getDocs(query(collection(db, "users"), where("phone", "==", phone), limit(1)));
-    setFarmer(snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() });
+    if (!phone.trim()) return;
+    setSearching(true);
+    setError("");
+    try {
+      const snap = await getDocs(query(collection(db, "users"), where("phone", "==", phone.trim()), limit(1)));
+      setFarmer(snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() });
+      if (snap.empty) setError("No farmer found with this phone number.");
+    } catch {
+      setError("Search failed. Please try again.");
+    } finally {
+      setSearching(false);
+    }
   };
 
   const toggleProduct = (id) =>
@@ -84,9 +114,12 @@ function ManualOrderModal({ onClose }) {
   const handleCreateOrder = async () => {
     if (!farmer || !seller || selectedProducts.length === 0) return;
     setSaving(true);
+    setError("");
     try {
       const commissionRate = seller.commissionRate || 0.065;
-      await addDoc(collection(db, "orders"), {
+      const orderId = await generateOrderId();
+      await setDoc(doc(db, "orders", orderId), {
+        orderId,
         farmerId: farmer.id,
         farmerName: farmer.name || "",
         farmerPhone: farmer.phone,
@@ -116,6 +149,8 @@ function ManualOrderModal({ onClose }) {
         createdAt: serverTimestamp(),
       });
       onClose();
+    } catch {
+      setError("Couldn't create the order. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -129,10 +164,14 @@ function ManualOrderModal({ onClose }) {
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700">✕</button>
         </div>
 
+        {error && <p className="mb-4 rounded-lg bg-red-50 p-2 text-sm text-errorRed">{error}</p>}
+
         <label className="mb-1 block text-sm font-medium text-gray-700">Farmer phone</label>
         <div className="mb-4 flex gap-2">
           <input value={phone} onChange={(e) => setPhone(e.target.value)} className="flex-1 rounded-lg border px-3 py-2" placeholder="+919876543210" />
-          <button onClick={handleSearchFarmer} className="rounded-lg bg-primary px-4 py-2 text-white">Search</button>
+          <button onClick={handleSearchFarmer} disabled={searching} className="rounded-lg bg-primary px-4 py-2 text-white disabled:opacity-50">
+            {searching ? "Searching…" : "Search"}
+          </button>
         </div>
         {farmer && <p className="mb-4 text-sm text-primaryMid">✓ {farmer.name || farmer.phone}</p>}
 
@@ -179,10 +218,14 @@ export default function Orders() {
   const [filter, setFilter] = useState("all");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showManualOrder, setShowManualOrder] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const q = query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(200));
-    const unsub = onSnapshot(q, (snap) => setOrders(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+    const unsub = onSnapshot(q, (snap) => {
+      setOrders(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      setLoading(false);
+    });
     return unsub;
   }, []);
 
@@ -214,6 +257,9 @@ export default function Orders() {
         ))}
       </div>
 
+      {loading ? (
+        <PageSpinner />
+      ) : (
       <div className="overflow-x-auto rounded-xl bg-white shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="bg-gray-50 text-gray-500">
@@ -239,9 +285,15 @@ export default function Orders() {
                 </td>
               </tr>
             ))}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-4 py-6 text-center text-gray-500">No orders in this filter yet.</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
+      )}
 
       <OrderDetailModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
       {showManualOrder && <ManualOrderModal onClose={() => setShowManualOrder(false)} />}

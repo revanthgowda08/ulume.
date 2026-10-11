@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -11,12 +12,20 @@ import Analytics from "./pages/Analytics";
 import Verification from "./pages/Verification";
 
 function Layout({ children }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <div className="flex">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto p-8" style={{ height: "100vh" }}>
-        {children}
-      </main>
+    <div className="flex h-screen overflow-hidden bg-gray-50">
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3 lg:hidden">
+          <button onClick={() => setSidebarOpen(true)} className="text-2xl text-primary" aria-label="Open menu">
+            ☰
+          </button>
+          <span className="text-lg font-bold text-primary">ULUME Admin</span>
+        </header>
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">{children}</main>
+      </div>
     </div>
   );
 }

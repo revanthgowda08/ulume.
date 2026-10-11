@@ -1,27 +1,50 @@
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, doc, updateDoc, query, orderBy } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { PageSpinner } from "../components/Spinner";
 
 export default function Sellers() {
   const [sellers, setSellers] = useState([]);
   const [tab, setTab] = useState("pending");
+  const [loading, setLoading] = useState(true);
+  const [actionError, setActionError] = useState("");
+  const [busyId, setBusyId] = useState(null);
 
   useEffect(() => {
     const q = query(collection(db, "sellers"), orderBy("createdAt", "desc"));
-    const unsub = onSnapshot(q, (snap) => setSellers(snap.docs.map((d) => ({ id: d.id, ...d.data() }))));
+    const unsub = onSnapshot(q, (snap) => {
+      setSellers(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      setLoading(false);
+    });
     return unsub;
   }, []);
 
   const filtered = sellers.filter((s) => (tab === "pending" ? !s.isVerified : s.isVerified));
 
   const handleApprove = async (sellerId) => {
-    // Flipping isVerified triggers functions/index.js#onSellerVerified, which
-    // sends the WhatsApp approval message server-side (token never touches the browser).
-    await updateDoc(doc(db, "sellers", sellerId), { isVerified: true });
+    setBusyId(sellerId);
+    setActionError("");
+    try {
+      // Flipping isVerified triggers functions/index.js#onSellerVerified, which
+      // sends the WhatsApp approval message server-side (token never touches the browser).
+      await updateDoc(doc(db, "sellers", sellerId), { isVerified: true });
+    } catch {
+      setActionError("Couldn't approve this seller. Please try again.");
+    } finally {
+      setBusyId(null);
+    }
   };
 
   const handleReject = async (sellerId) => {
-    await updateDoc(doc(db, "sellers", sellerId), { isVerified: false, isActive: false });
+    setBusyId(sellerId);
+    setActionError("");
+    try {
+      await updateDoc(doc(db, "sellers", sellerId), { isVerified: false, isActive: false });
+    } catch {
+      setActionError("Couldn't reject this seller. Please try again.");
+    } finally {
+      setBusyId(null);
+    }
   };
 
   return (
@@ -42,6 +65,13 @@ export default function Sellers() {
         ))}
       </div>
 
+      {actionError && (
+        <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-errorRed">{actionError}</div>
+      )}
+
+      {loading ? (
+        <PageSpinner />
+      ) : (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((seller) => (
           <div key={seller.id} className="rounded-xl bg-white p-5 shadow-sm">
@@ -73,13 +103,15 @@ export default function Sellers() {
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={() => handleApprove(seller.id)}
-                  className="flex-1 rounded-lg bg-primaryMid py-2 text-sm font-semibold text-white hover:bg-primary"
+                  disabled={busyId === seller.id}
+                  className="flex-1 rounded-lg bg-primaryMid py-2 text-sm font-semibold text-white hover:bg-primary disabled:opacity-50"
                 >
-                  Approve
+                  {busyId === seller.id ? "Working…" : "Approve"}
                 </button>
                 <button
                   onClick={() => handleReject(seller.id)}
-                  className="flex-1 rounded-lg border border-errorRed py-2 text-sm font-semibold text-errorRed hover:bg-red-50"
+                  disabled={busyId === seller.id}
+                  className="flex-1 rounded-lg border border-errorRed py-2 text-sm font-semibold text-errorRed hover:bg-red-50 disabled:opacity-50"
                 >
                   Reject
                 </button>
@@ -87,8 +119,13 @@ export default function Sellers() {
             )}
           </div>
         ))}
-        {filtered.length === 0 && <p className="text-gray-500">No sellers in this list.</p>}
+        {filtered.length === 0 && (
+          <p className="text-gray-500">
+            {tab === "pending" ? "No sellers waiting for verification." : "No verified sellers yet."}
+          </p>
+        )}
       </div>
+      )}
     </div>
   );
 }

@@ -7,22 +7,33 @@ export default function Farmers() {
   const [farmer, setFarmer] = useState(null);
   const [orders, setOrders] = useState([]);
   const [searched, setSearched] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSearch = async () => {
+    if (!phone.trim()) return;
     setSearched(true);
-    const snap = await getDocs(query(collection(db, "users"), where("phone", "==", phone), limit(1)));
-    if (snap.empty) {
-      setFarmer(null);
-      setOrders([]);
-      return;
-    }
-    const farmerDoc = { id: snap.docs[0].id, ...snap.docs[0].data() };
-    setFarmer(farmerDoc);
+    setSearching(true);
+    setError("");
+    try {
+      const snap = await getDocs(query(collection(db, "users"), where("phone", "==", phone.trim()), limit(1)));
+      if (snap.empty) {
+        setFarmer(null);
+        setOrders([]);
+        return;
+      }
+      const farmerDoc = { id: snap.docs[0].id, ...snap.docs[0].data() };
+      setFarmer(farmerDoc);
 
-    const ordersSnap = await getDocs(
-      query(collection(db, "orders"), where("farmerId", "==", farmerDoc.id), orderBy("createdAt", "desc"), limit(20))
-    );
-    setOrders(ordersSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      const ordersSnap = await getDocs(
+        query(collection(db, "orders"), where("farmerId", "==", farmerDoc.id), orderBy("createdAt", "desc"), limit(20))
+      );
+      setOrders(ordersSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    } catch {
+      setError("Search failed. Please try again.");
+    } finally {
+      setSearching(false);
+    }
   };
 
   return (
@@ -35,12 +46,22 @@ export default function Farmers() {
           onChange={(e) => setPhone(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           placeholder="Search by phone e.g. +919876543210"
-          className="w-80 rounded-lg border px-3 py-2"
+          className="w-full max-w-xs rounded-lg border px-3 py-2 focus:border-primaryMid focus:outline-none"
         />
-        <button onClick={handleSearch} className="rounded-lg bg-primary px-4 py-2 text-white">Search</button>
+        <button
+          onClick={handleSearch}
+          disabled={searching}
+          className="rounded-lg bg-primary px-4 py-2 text-white hover:bg-primaryMid disabled:opacity-50"
+        >
+          {searching ? "Searching…" : "Search"}
+        </button>
       </div>
 
-      {searched && !farmer && <p className="text-gray-500">No farmer found with this phone number.</p>}
+      {error && <p className="mb-4 text-sm text-errorRed">{error}</p>}
+
+      {searched && !searching && !farmer && !error && (
+        <p className="text-gray-500">No farmer found with this phone number.</p>
+      )}
 
       {farmer && (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

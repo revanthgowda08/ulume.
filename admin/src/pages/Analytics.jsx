@@ -5,16 +5,19 @@ import {
   XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend,
 } from "recharts";
 import { db } from "../firebase/config";
+import { PageSpinner } from "../components/Spinner";
 
 const PIE_COLORS = ["#1A3C34", "#2E7D52", "#F5A623", "#D4891C", "#6B9080", "#C62828"];
 
 export default function Analytics() {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, "orders"), (snap) =>
-      setOrders(snap.docs.map((d) => d.data()))
-    );
+    const unsub = onSnapshot(collection(db, "orders"), (snap) => {
+      setOrders(snap.docs.map((d) => d.data()));
+      setLoading(false);
+    });
     return unsub;
   }, []);
 
@@ -57,6 +60,28 @@ export default function Analytics() {
     return Object.entries(counts).map(([name, value]) => ({ name, value }));
   }, [orders]);
 
+  if (loading) {
+    return (
+      <div>
+        <h1 className="mb-6 text-2xl font-bold text-primary">Analytics</h1>
+        <PageSpinner />
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div>
+        <h1 className="mb-6 text-2xl font-bold text-primary">Analytics</h1>
+        <div className="flex flex-col items-center justify-center gap-2 rounded-xl bg-white p-12 text-center shadow-sm">
+          <span className="text-3xl">📈</span>
+          <p className="font-semibold text-primary">No orders yet</p>
+          <p className="text-sm text-gray-500">Charts will fill in once orders start coming through.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold text-primary">Analytics</h1>
@@ -89,7 +114,7 @@ export default function Analytics() {
         </div>
 
         <div className="rounded-xl bg-white p-5 shadow-sm">
-          <h3 className="mb-4 font-semibold text-gray-700">District Distribution</h3>
+          <h3 className="mb-4 font-semibold text-gray-700">Orders by Region</h3>
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
               <Pie data={districtDistribution} dataKey="value" nameKey="name" outerRadius={100} label>
