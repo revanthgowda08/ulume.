@@ -84,7 +84,7 @@ export default function CartScreen({ navigation }) {
               <Text style={styles.codInfoText}>💰 {t("ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ ಕೊಡಿ — ಮುಂಗಡ ಪಾವತಿ ಬೇಡ")}</Text>
             </View>
             <TouchableOpacity style={styles.checkoutBtn} onPress={() => navigation.navigate("Checkout")}>
-              <Text style={styles.checkoutBtnText}>Checkout →</Text>
+              <Text style={styles.checkoutBtnText}>{t("ಚೆಕ್‌ಔಟ್")} →</Text>
             </TouchableOpacity>
           </View>
         </>

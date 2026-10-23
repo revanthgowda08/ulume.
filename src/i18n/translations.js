@@ -148,6 +148,7 @@ export const en = {
   "ಉಚಿತ": "Free",
   "ಒಟ್ಟು": "Total",
   "ಹಣ ಸಾಮಾನು ಬಂದ ಮೇಲೆ ಕೊಡಿ — ಮುಂಗಡ ಪಾವತಿ ಬೇಡ": "Pay when it arrives — no advance payment needed",
+  "ಚೆಕ್‌ಔಟ್": "Checkout",
 
   // --- CheckoutScreen ---
   "ವಿಳಾಸ": "Address",
