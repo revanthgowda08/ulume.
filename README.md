@@ -35,7 +35,10 @@ Required values in `.env` (all `EXPO_PUBLIC_*` vars are safe to ship in the clie
 | `EXPO_PUBLIC_GOOGLE_TTS_KEY` | GCP Console → Credentials (Text-to-Speech API key) |
 | `EXPO_PUBLIC_GOOGLE_MAPS_KEY` | GCP Console → Credentials (Maps Platform key) |
 | `EXPO_PUBLIC_GOOGLE_TRANSLATE_KEY` | GCP Console → Credentials (Translation API key) |
-| `EXPO_PUBLIC_WHATSAPP_PHONE_ID` | Meta for Developers → WhatsApp → API Setup |
+
+Cloud Functions have their own separate env file — see `functions/.env.example` (copy to
+`functions/.env`) for `WHATSAPP_PHONE_ID`, `WHATSAPP_ACCESS_TOKEN`, and the Razorpay keys.
+Those are server-only and must never be added to this project's root `.env`.
 
 Also place your Android Firebase config at the project root as `google-services.json`
 (Firebase Console → Project settings → Your apps → Android app).

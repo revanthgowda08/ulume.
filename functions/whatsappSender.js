@@ -1,7 +1,7 @@
 const axios = require("axios");
 const functions = require("firebase-functions");
 
-const WHATSAPP_PHONE_ID = process.env.EXPO_PUBLIC_WHATSAPP_PHONE_ID || functions.config().whatsapp?.phone_id;
+const WHATSAPP_PHONE_ID = process.env.WHATSAPP_PHONE_ID || functions.config().whatsapp?.phone_id;
 const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN || functions.config().whatsapp?.access_token;
 const GRAPH_URL = `https://graph.facebook.com/v19.0/${WHATSAPP_PHONE_ID}/messages`;
 
