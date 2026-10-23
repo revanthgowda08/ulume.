@@ -340,10 +340,10 @@ function FarmProfileTab({ user, setUser }) {
       <Text style={styles.fieldLabel}>{t("ಗ್ರಾಮ")}</Text>
       <TextInput style={styles.input} value={village} onChangeText={setVillage} placeholderTextColor={colors.textMuted} />
 
-      <Text style={styles.fieldLabel}>State</Text>
+      <Text style={styles.fieldLabel}>{t("ರಾಜ್ಯ")}</Text>
       <TextInput style={styles.input} value={state} onChangeText={setState} placeholderTextColor={colors.textMuted} />
 
-      <Text style={styles.fieldLabel}>District</Text>
+      <Text style={styles.fieldLabel}>{t("ಜಿಲ್ಲೆ")}</Text>
       <TextInput style={styles.input} value={district} onChangeText={setDistrict} placeholderTextColor={colors.textMuted} />
 
       <Text style={styles.fieldLabel}>{t("ಗಾತ್ರ (ಎಕರೆ)")}</Text>
@@ -351,11 +351,11 @@ function FarmProfileTab({ user, setUser }) {
 
       <View style={styles.row}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.fieldLabel}>Latitude</Text>
+          <Text style={styles.fieldLabel}>{t("ಅಕ್ಷಾಂಶ")}</Text>
           <TextInput style={styles.input} value={latitude} onChangeText={setLatitude} keyboardType="numbers-and-punctuation" placeholderTextColor={colors.textMuted} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.fieldLabel}>Longitude</Text>
+          <Text style={styles.fieldLabel}>{t("ರೇಖಾಂಶ")}</Text>
           <TextInput style={styles.input} value={longitude} onChangeText={setLongitude} keyboardType="numbers-and-punctuation" placeholderTextColor={colors.textMuted} />
         </View>
       </View>

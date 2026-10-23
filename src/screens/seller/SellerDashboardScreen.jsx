@@ -20,14 +20,14 @@ import { signOutUser } from "../../services/firebase/auth";
 import SalesTrendChart from "../../components/SalesTrendChart";
 import AddProductScreen from "./AddProductScreen";
 
-const TABS = ["Products", "Orders", "Add Product"];
+const TABS = ["ಉತ್ಪನ್ನಗಳು", "ಆರ್ಡರ್‌ಗಳು", "ಉತ್ಪನ್ನ ಸೇರಿಸಿ"];
 
 export default function SellerDashboardScreen({ navigation }) {
   const seller = useAuthStore((s) => s.seller);
   const { clearAuth } = useAuthStore();
   const language = useAppStore((s) => s.language);
   const t = useT();
-  const [tab, setTab] = useState("Products");
+  const [tab, setTab] = useState(TABS[0]);
 
   const [pendingOrders, setPendingOrders] = useState([]);
   const [allOrders, setAllOrders] = useState([]);
@@ -84,21 +84,25 @@ export default function SellerDashboardScreen({ navigation }) {
   };
 
   const handleDeleteProduct = (product) => {
-    Alert.alert("Remove product", `Remove "${product.nameKannada || product.name}" from your catalog?`, [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Remove",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await deleteProduct(product.id);
-            setProducts((prev) => prev.filter((p) => p.id !== product.id));
-          } catch (e) {
-            Alert.alert("Error", "Couldn't remove the product. Please try again.");
-          }
+    Alert.alert(
+      t("ಉತ್ಪನ್ನ ತೆಗೆಯಿರಿ"),
+      `${t("ತೆಗೆಯುವುದೇ")} "${product.nameKannada || product.name}"?`,
+      [
+        { text: t("ಇಲ್ಲ"), style: "cancel" },
+        {
+          text: t("ತೆಗೆಯಿರಿ"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteProduct(product.id);
+              setProducts((prev) => prev.filter((p) => p.id !== product.id));
+            } catch (e) {
+              Alert.alert(t("ದೋಷ"), t("ತೆಗೆಯಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ."));
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   return (
@@ -106,7 +110,7 @@ export default function SellerDashboardScreen({ navigation }) {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>ULUME</Text>
         <TouchableOpacity onPress={async () => { await signOutUser(); clearAuth(); }}>
-          <Text style={styles.logout}>Logout</Text>
+          <Text style={styles.logout}>{t("ಲಾಗ್‌ಔಟ್")}</Text>
         </TouchableOpacity>
       </View>
 
@@ -114,15 +118,15 @@ export default function SellerDashboardScreen({ navigation }) {
         style={styles.body}
         contentContainerStyle={{ padding: spacing.screenPadding, paddingBottom: spacing.xl }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[colors.primary]} tintColor={colors.primary} />}
-        data={tab === "Products" ? products : tab === "Orders" ? allOrders : []}
+        data={tab === TABS[0] ? products : tab === TABS[1] ? allOrders : []}
         keyExtractor={(item) => item.id}
         ListHeaderComponent={
           <View>
             <View style={styles.titleRow}>
-              <Text style={styles.title}>Vendor Dashboard</Text>
+              <Text style={styles.title}>{t("ಮಾರಾಟಗಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್")}</Text>
               {seller?.isVerified && <Text style={styles.verified}>✓</Text>}
             </View>
-            <Text style={styles.subtitle}>Manage your catalog, inventory, and sales.</Text>
+            <Text style={styles.subtitle}>{t("ನಿಮ್ಮ ಕ್ಯಾಟಲಾಗ್, ಸ್ಟಾಕ್ ಮತ್ತು ಮಾರಾಟ ನಿರ್ವಹಿಸಿ.")}</Text>
 
             {loadError && (
               <View style={styles.errorBox}>
@@ -134,17 +138,17 @@ export default function SellerDashboardScreen({ navigation }) {
               <View style={styles.statBox}>
                 <Text style={styles.statIcon}>₹</Text>
                 <Text style={styles.statValue}>{formatRupees(totalSales)}</Text>
-                <Text style={styles.statLabel}>Total Sales</Text>
+                <Text style={styles.statLabel}>{t("ಒಟ್ಟು ಮಾರಾಟ")}</Text>
               </View>
               <View style={styles.statBox}>
                 <Text style={styles.statIcon}>📦</Text>
                 <Text style={styles.statValue}>{unitsSold}</Text>
-                <Text style={styles.statLabel}>Units Sold</Text>
+                <Text style={styles.statLabel}>{t("ಮಾರಾಟವಾದ ಯೂನಿಟ್")}</Text>
               </View>
               <View style={styles.statBox}>
                 <Text style={styles.statIcon}>📈</Text>
                 <Text style={styles.statValue}>{allOrders.length}</Text>
-                <Text style={styles.statLabel}>Orders</Text>
+                <Text style={styles.statLabel}>{t("ಆರ್ಡರ್‌ಗಳು")}</Text>
               </View>
             </View>
 
@@ -153,27 +157,27 @@ export default function SellerDashboardScreen({ navigation }) {
             <View style={styles.tabRow}>
               {TABS.map((tb) => (
                 <TouchableOpacity key={tb} style={[styles.tab, tab === tb && styles.tabActive]} onPress={() => setTab(tb)}>
-                  <Text style={[styles.tabText, tab === tb && styles.tabTextActive]}>{tb}</Text>
+                  <Text style={[styles.tabText, tab === tb && styles.tabTextActive]}>{t(tb)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
 
-            {tab === "Products" && productsLoading && <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.lg }} />}
+            {tab === TABS[0] && productsLoading && <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.lg }} />}
 
-            {tab === "Orders" && pendingOrders.length > 0 && (
+            {tab === TABS[1] && pendingOrders.length > 0 && (
               <View style={styles.pendingSection}>
                 <Text style={styles.sectionTitle}>{t("ಬಾಕಿ ಇರುವ ಆರ್ಡರ್‌ಗಳು")}</Text>
                 {pendingOrders.map((order) => (
                   <View key={order.id} style={styles.pendingCard}>
                     <Text style={styles.farmerName}>{order.farmerName || order.farmerPhone}</Text>
                     <Text style={styles.village}>{order.farmerAddress}</Text>
-                    <Text style={styles.itemsSummary}>{order.items?.length || 0} ಐಟಂ · {formatRupees(order.total)}</Text>
+                    <Text style={styles.itemsSummary}>{order.items?.length || 0} {t("ಐಟಂ")} · {formatRupees(order.total)}</Text>
                     <View style={styles.actionRow}>
                       <TouchableOpacity style={styles.confirmBtn} onPress={() => handleConfirm(order.orderId)}>
-                        <Text style={styles.confirmBtnText}>✓ CONFIRM</Text>
+                        <Text style={styles.confirmBtnText}>✓ {t("ಖಚಿತ")}</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.rejectBtn} onPress={() => handleReject(order.orderId)}>
-                        <Text style={styles.rejectBtnText}>✕ REJECT</Text>
+                        <Text style={styles.rejectBtnText}>✕ {t("ತಿರಸ್ಕರಿಸಿ")}</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -182,28 +186,28 @@ export default function SellerDashboardScreen({ navigation }) {
               </View>
             )}
 
-            {tab === "Orders" && ordersLoading && <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.lg }} />}
+            {tab === TABS[1] && ordersLoading && <ActivityIndicator color={colors.primary} style={{ marginTop: spacing.lg }} />}
 
-            {tab === "Add Product" && <AddProductScreen navigation={navigation} />}
+            {tab === TABS[2] && <AddProductScreen navigation={navigation} />}
           </View>
         }
         renderItem={({ item }) =>
-          tab === "Products" ? (
+          tab === TABS[0] ? (
             <View style={styles.productCard}>
               <LazyImage uri={item.images?.[0]} style={styles.productImage} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.productName} numberOfLines={1}>{item.nameKannada || item.name}</Text>
-                <Text style={styles.productMeta}>{item.category} · {item.stock} in stock</Text>
+                <Text style={styles.productMeta}>{item.category} · {item.stock} {t("ಸ್ಟಾಕ್‌ನಲ್ಲಿದೆ")}</Text>
               </View>
               <View style={[styles.liveBadge, !item.isAvailable && styles.pausedBadge]}>
-                <Text style={styles.liveBadgeText}>{item.isAvailable ? "Live" : "Paused"}</Text>
+                <Text style={styles.liveBadgeText}>{item.isAvailable ? t("ಲಭ್ಯ") : t("ನಿಲ್ಲಿಸಲಾಗಿದೆ")}</Text>
               </View>
               <Text style={styles.productPrice}>{formatRupees(item.price)}</Text>
               <TouchableOpacity onPress={() => handleDeleteProduct(item)} style={styles.deleteBtn}>
                 <Text style={styles.deleteIcon}>🗑</Text>
               </TouchableOpacity>
             </View>
-          ) : tab === "Orders" ? (
+          ) : tab === TABS[1] ? (
             <TouchableOpacity style={styles.orderRow} onPress={() => navigation.navigate("SellerOrderDetail", { orderId: item.orderId })}>
               <View style={{ flex: 1 }}>
                 <Text style={styles.orderRowId}>{item.orderId}</Text>
@@ -214,10 +218,10 @@ export default function SellerDashboardScreen({ navigation }) {
           ) : null
         }
         ListEmptyComponent={
-          tab === "Products" && !productsLoading ? (
-            <Text style={styles.emptyText}>No products yet. Switch to "Add Product" to list one.</Text>
-          ) : tab === "Orders" && !ordersLoading ? (
-            <Text style={styles.emptyText}>No orders yet.</Text>
+          tab === TABS[0] && !productsLoading ? (
+            <Text style={styles.emptyText}>{t("ಇನ್ನೂ ಯಾವುದೇ ಉತ್ಪನ್ನ ಇಲ್ಲ. ಒಂದನ್ನು ಪಟ್ಟಿ ಮಾಡಲು \"ಉತ್ಪನ್ನ ಸೇರಿಸಿ\" ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ.")}</Text>
+          ) : tab === TABS[1] && !ordersLoading ? (
+            <Text style={styles.emptyText}>{t("ಇನ್ನೂ ಯಾವುದೇ ಆರ್ಡರ್ ಇಲ್ಲ.")}</Text>
           ) : null
         }
       />

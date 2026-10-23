@@ -64,6 +64,8 @@ export const en = {
   "ಒಪ್ಪಿಗೆ": "Accept",
   "ತಿರಸ್ಕರಿಸಿ": "Decline",
   "ಫಾರ್ಮ್ ಪ್ರೊಫೈಲ್ ಉಳಿಸಿ": "Save Farm Profile",
+  "ಅಕ್ಷಾಂಶ": "Latitude",
+  "ರೇಖಾಂಶ": "Longitude",
   "ಫಾರ್ಮ್ ಹೆಸರು": "Farm Name",
   "ಗಾತ್ರ (ಎಕರೆ)": "Size (acres)",
   "ಫಾರ್ಮ್ ಫೋಟೋ": "Farm photo",
@@ -228,6 +230,11 @@ export const en = {
   "ರೈತ ವಿವರ": "Farmer details",
   "ಐಟಂಗಳು": "Items",
   "ಆದಾಯ ವಿವರ": "Earnings breakdown",
+  "ಒಟ್ಟು ಮೊತ್ತ": "Gross",
+  "ಕಮಿಷನ್": "Commission",
+  "ನಿಮ್ಮ ಆದಾಯ": "Your earnings",
+  "ಡೆಲಿವರಿಗೆ ಹೊರಟಿದೆ ಎಂದು ಗುರುತಿಸಿ": "Mark Out for Delivery",
+  "ತಲುಪಿಸಲಾಗಿದೆ + ನಗದು ಸ್ವೀಕರಿಸಲಾಗಿದೆ": "Delivered + CoD Collected",
 
   // --- AddProductScreen ---
   "ಅನುವಾದ ಆಗಲಿಲ್ಲ": "Translation failed",
@@ -255,6 +262,24 @@ export const en = {
   "ಪಾವತಿ ಇತಿಹಾಸ": "Payout history",
   "ಪಾವತಿ ಆಗಿದೆ": "Paid",
   "ಇನ್ನೂ ಯಾವುದೇ ಪಾವತಿ ಇಲ್ಲ": "No payouts yet",
+
+  // --- SellerDashboardScreen ---
+  "ಉತ್ಪನ್ನಗಳು": "Products",
+  "ಉತ್ಪನ್ನ ಸೇರಿಸಿ": "Add Product",
+  "ಮಾರಾಟಗಾರ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್": "Vendor Dashboard",
+  "ನಿಮ್ಮ ಕ್ಯಾಟಲಾಗ್, ಸ್ಟಾಕ್ ಮತ್ತು ಮಾರಾಟ ನಿರ್ವಹಿಸಿ.": "Manage your catalog, inventory, and sales.",
+  "ಒಟ್ಟು ಮಾರಾಟ": "Total Sales",
+  "ಮಾರಾಟವಾದ ಯೂನಿಟ್": "Units Sold",
+  "ಐಟಂ": "items",
+  "ಸ್ಟಾಕ್‌ನಲ್ಲಿದೆ": "in stock",
+  "ನಿಲ್ಲಿಸಲಾಗಿದೆ": "Paused",
+  "ಉತ್ಪನ್ನ ತೆಗೆಯಿರಿ": "Remove product",
+  "ತೆಗೆಯುವುದೇ": "Remove",
+  "ತೆಗೆಯಿರಿ": "Remove",
+  "ತೆಗೆಯಲು ಆಗಲಿಲ್ಲ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.": "Couldn't remove it. Please try again.",
+  "ಇನ್ನೂ ಯಾವುದೇ ಉತ್ಪನ್ನ ಇಲ್ಲ. ಒಂದನ್ನು ಪಟ್ಟಿ ಮಾಡಲು \"ಉತ್ಪನ್ನ ಸೇರಿಸಿ\" ಟ್ಯಾಬ್‌ಗೆ ಹೋಗಿ.":
+    "No products yet. Switch to \"Add Product\" to list one.",
+  "ಇನ್ನೂ ಯಾವುದೇ ಆರ್ಡರ್ ಇಲ್ಲ.": "No orders yet.",
 
   // --- FarmingTipsScreen ---
   "ಸಲಹೆಗಳು": "Tips",

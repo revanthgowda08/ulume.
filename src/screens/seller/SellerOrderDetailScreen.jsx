@@ -75,7 +75,7 @@ export default function SellerOrderDetailScreen({ route, navigation }) {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>{t("ಆದಾಯ ವಿವರ")}</Text>
         <Text style={styles.commissionText}>
-          Gross {formatRupees(grossAmount)} — Commission {formatRupees(commissionAmount)} ({((order.commissionRate || 0.065) * 100).toFixed(1)}%) = Your earnings {formatRupees(earnings)}
+          {t("ಒಟ್ಟು ಮೊತ್ತ")} {formatRupees(grossAmount)} — {t("ಕಮಿಷನ್")} {formatRupees(commissionAmount)} ({((order.commissionRate || 0.065) * 100).toFixed(1)}%) = {t("ನಿಮ್ಮ ಆದಾಯ")} {formatRupees(earnings)}
         </Text>
       </View>
 
@@ -83,21 +83,21 @@ export default function SellerOrderDetailScreen({ route, navigation }) {
         {order.status === "placed" && (
           <View style={styles.actionRow}>
             <TouchableOpacity style={styles.confirmBtn} onPress={() => handleStatusChange("confirmed")} disabled={updating}>
-              <Text style={styles.confirmBtnText}>CONFIRM</Text>
+              <Text style={styles.confirmBtnText}>{t("ಖಚಿತ")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.rejectBtn} onPress={() => handleStatusChange("cancelled")} disabled={updating}>
-              <Text style={styles.rejectBtnText}>REJECT</Text>
+              <Text style={styles.rejectBtnText}>{t("ತಿರಸ್ಕರಿಸಿ")}</Text>
             </TouchableOpacity>
           </View>
         )}
         {order.status === "confirmed" && (
           <TouchableOpacity style={styles.primaryBtn} onPress={() => handleStatusChange("out_for_delivery")} disabled={updating}>
-            <Text style={styles.primaryBtnText}>🚚 Mark Out for Delivery</Text>
+            <Text style={styles.primaryBtnText}>🚚 {t("ಡೆಲಿವರಿಗೆ ಹೊರಟಿದೆ ಎಂದು ಗುರುತಿಸಿ")}</Text>
           </TouchableOpacity>
         )}
         {order.status === "out_for_delivery" && (
           <TouchableOpacity style={styles.primaryBtn} onPress={() => handleStatusChange("delivered")} disabled={updating}>
-            <Text style={styles.primaryBtnText}>✅ Delivered + CoD Collected</Text>
+            <Text style={styles.primaryBtnText}>✅ {t("ತಲುಪಿಸಲಾಗಿದೆ + ನಗದು ಸ್ವೀಕರಿಸಲಾಗಿದೆ")}</Text>
           </TouchableOpacity>
         )}
       </View>
