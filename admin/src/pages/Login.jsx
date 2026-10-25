@@ -38,25 +38,25 @@ export default function Login() {
     <div className="flex min-h-screen items-center justify-center bg-primary px-4">
       <form onSubmit={handleSubmit} className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
         <div className="mb-6 flex flex-col items-center">
-          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-2xl">🍃</div>
-          <h1 className="text-center text-2xl font-bold text-primary">ULUME Admin</h1>
-          <p className="mt-1 text-center text-sm text-gray-500">Sign in to continue</p>
+          <div className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primaryMid text-2xl">🍃</div>
+          <h1 className="font-serif text-center text-3xl font-bold text-primary">ULUME Admin</h1>
+          <p className="mt-1 text-center text-sm text-inkMuted">Sign in to continue</p>
         </div>
 
         {error && <p className="mb-4 rounded-lg bg-red-50 p-2 text-sm text-errorRed">{error}</p>}
 
-        <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
+        <label className="mb-1 block text-sm font-medium text-ink">Email</label>
         <input
           type="email"
           required
           autoComplete="username"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-primaryMid focus:outline-none"
+          className="mb-4 w-full rounded-lg border border-line px-3 py-2 focus:border-primaryMid focus:outline-none"
         />
 
-        <label className="mb-1 block text-sm font-medium text-gray-700">Password</label>
-        <div className="mb-6 flex items-center rounded-lg border border-gray-300 focus-within:border-primaryMid">
+        <label className="mb-1 block text-sm font-medium text-ink">Password</label>
+        <div className="mb-6 flex items-center rounded-lg border border-line focus-within:border-primaryMid">
           <input
             type={showPassword ? "text" : "password"}
             required
@@ -68,7 +68,7 @@ export default function Login() {
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="px-3 text-sm text-gray-400 hover:text-gray-600"
+            className="px-3 text-sm text-inkFaint hover:text-inkMuted"
             tabIndex={-1}
           >
             {showPassword ? "Hide" : "Show"}

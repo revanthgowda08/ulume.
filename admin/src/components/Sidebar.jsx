@@ -25,9 +25,12 @@ export default function Sidebar({ isOpen, onClose }) {
         }`}
       >
         <div className="flex items-center justify-between p-6">
-          <div>
-            <h1 className="text-2xl font-bold tracking-wide">ULUME</h1>
-            <p className="text-xs text-primaryLight">Admin Panel</p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primaryMid text-base">🍃</div>
+            <div>
+              <h1 className="font-serif text-xl font-bold tracking-wide">ULUME</h1>
+              <p className="text-xs text-primaryLight">Admin Panel</p>
+            </div>
           </div>
           <button onClick={onClose} className="text-xl text-primaryLight lg:hidden" aria-label="Close menu">
             ✕

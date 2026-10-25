@@ -73,10 +73,10 @@ export default function Analytics() {
     return (
       <div>
         <h1 className="mb-6 text-2xl font-bold text-primary">Analytics</h1>
-        <div className="flex flex-col items-center justify-center gap-2 rounded-xl bg-white p-12 text-center shadow-sm">
+        <div className="flex flex-col items-center justify-center gap-2 rounded-xl bg-white p-12 text-center shadow-card">
           <span className="text-3xl">📈</span>
           <p className="font-semibold text-primary">No orders yet</p>
-          <p className="text-sm text-gray-500">Charts will fill in once orders start coming through.</p>
+          <p className="text-sm text-inkMuted">Charts will fill in once orders start coming through.</p>
         </div>
       </div>
     );
@@ -86,8 +86,8 @@ export default function Analytics() {
     <div>
       <h1 className="mb-6 text-2xl font-bold text-primary">Analytics</h1>
 
-      <div className="mb-6 rounded-xl bg-white p-5 shadow-sm">
-        <h3 className="mb-4 font-semibold text-gray-700">Daily GMV (last 30 days)</h3>
+      <div className="mb-6 rounded-xl bg-white p-5 shadow-card">
+        <h3 className="mb-4 font-semibold text-ink">Daily GMV (last 30 days)</h3>
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={dailyGmv}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -100,8 +100,8 @@ export default function Analytics() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-xl bg-white p-5 shadow-sm">
-          <h3 className="mb-4 font-semibold text-gray-700">Top 5 Categories</h3>
+        <div className="rounded-xl bg-white p-5 shadow-card">
+          <h3 className="mb-4 font-semibold text-ink">Top 5 Categories</h3>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={topCategories}>
               <CartesianGrid strokeDasharray="3 3" />
@@ -113,8 +113,8 @@ export default function Analytics() {
           </ResponsiveContainer>
         </div>
 
-        <div className="rounded-xl bg-white p-5 shadow-sm">
-          <h3 className="mb-4 font-semibold text-gray-700">Orders by Region</h3>
+        <div className="rounded-xl bg-white p-5 shadow-card">
+          <h3 className="mb-4 font-semibold text-ink">Orders by Region</h3>
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
               <Pie data={districtDistribution} dataKey="value" nameKey="name" outerRadius={100} label>

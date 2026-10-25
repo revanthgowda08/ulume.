@@ -57,7 +57,7 @@ export default function Sellers() {
             key={t}
             onClick={() => setTab(t)}
             className={`rounded-full px-4 py-1.5 text-sm font-medium capitalize ${
-              tab === t ? "bg-primary text-white" : "bg-white text-gray-600 hover:bg-gray-100"
+              tab === t ? "bg-primary text-white" : "bg-white text-inkMuted hover:bg-surfaceMuted"
             }`}
           >
             {t}
@@ -74,15 +74,15 @@ export default function Sellers() {
       ) : (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((seller) => (
-          <div key={seller.id} className="rounded-xl bg-white p-5 shadow-sm">
+          <div key={seller.id} className="rounded-xl bg-white p-5 shadow-card">
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="font-bold text-primary">{seller.shopName}</h3>
-                <p className="text-xs text-gray-500">{seller.shopNameKannada}</p>
+                <p className="text-xs text-inkMuted">{seller.shopNameKannada}</p>
               </div>
               {seller.isVerified && <span className="text-primaryMid">✓</span>}
             </div>
-            <div className="mt-3 space-y-1 text-sm text-gray-600">
+            <div className="mt-3 space-y-1 text-sm text-inkMuted">
               <p>👤 {seller.ownerName}</p>
               <p>📞 {seller.phone}</p>
               <p>📍 {seller.village}, {seller.district}</p>
@@ -120,7 +120,7 @@ export default function Sellers() {
           </div>
         ))}
         {filtered.length === 0 && (
-          <p className="text-gray-500">
+          <p className="text-inkMuted">
             {tab === "pending" ? "No sellers waiting for verification." : "No verified sellers yet."}
           </p>
         )}

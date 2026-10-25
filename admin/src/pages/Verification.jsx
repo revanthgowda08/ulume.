@@ -116,7 +116,7 @@ export default function Verification() {
     return (
       <div>
         <h1 className="mb-1 text-2xl font-bold text-primary">Admin Dashboard</h1>
-        <p className="mb-6 text-sm text-gray-500">Platform oversight &amp; verification.</p>
+        <p className="mb-6 text-sm text-inkMuted">Platform oversight &amp; verification.</p>
         <PageSpinner />
       </div>
     );
@@ -125,7 +125,7 @@ export default function Verification() {
   return (
     <div>
       <h1 className="mb-1 text-2xl font-bold text-primary">Admin Dashboard</h1>
-      <p className="mb-6 text-sm text-gray-500">Platform oversight &amp; verification.</p>
+      <p className="mb-6 text-sm text-inkMuted">Platform oversight &amp; verification.</p>
 
       {actionError && (
         <div className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-errorRed">{actionError}</div>
@@ -140,8 +140,8 @@ export default function Verification() {
         <StatCard label="Revenue" value={`₹${revenue.toLocaleString("en-IN")}`} icon="₹" />
       </div>
 
-      <div className="mt-6 rounded-xl bg-white p-5 shadow-sm">
-        <h3 className="mb-4 font-semibold text-gray-700">User Distribution</h3>
+      <div className="mt-6 rounded-xl bg-white p-5 shadow-card">
+        <h3 className="mb-4 font-semibold text-ink">User Distribution</h3>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={distribution}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -162,7 +162,7 @@ export default function Verification() {
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`rounded-full px-4 py-1.5 text-sm font-medium ${
-              tab === t.key ? "bg-primary text-white" : "bg-white text-gray-600 hover:bg-gray-100"
+              tab === t.key ? "bg-primary text-white" : "bg-white text-inkMuted hover:bg-surfaceMuted"
             }`}
           >
             {t.label}
@@ -173,15 +173,15 @@ export default function Verification() {
       {tab === "verification" && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {allUsers.map((u) => (
-            <div key={`${u.role}-${u.id}`} className="rounded-xl bg-white p-4 shadow-sm">
+            <div key={`${u.role}-${u.id}`} className="rounded-xl bg-white p-4 shadow-card">
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-semibold text-primary">{nameFor(u.role, u)}</p>
-                  <p className="text-xs text-gray-500">{ROLE_META[u.role].label}</p>
+                  <p className="text-xs text-inkMuted">{ROLE_META[u.role].label}</p>
                 </div>
               </div>
-              <p className="mt-2 text-xs text-gray-500">{u.email || "—"}</p>
-              <p className="text-xs text-gray-500">{locationFor(u)}</p>
+              <p className="mt-2 text-xs text-inkMuted">{u.email || "—"}</p>
+              <p className="text-xs text-inkMuted">{locationFor(u)}</p>
               <div className="mt-3">
                 {u.isVerified ? (
                   <span className="rounded-full bg-primaryMid px-3 py-1 text-xs font-bold text-white">✓ Verified</span>
@@ -197,21 +197,21 @@ export default function Verification() {
               </div>
             </div>
           ))}
-          {allUsers.length === 0 && <p className="text-gray-500">No users yet.</p>}
+          {allUsers.length === 0 && <p className="text-inkMuted">No users yet.</p>}
         </div>
       )}
 
       {tab === "approval" && (
-        <div className="rounded-xl bg-white p-5 shadow-sm">
+        <div className="rounded-xl bg-white p-5 shadow-card">
           {productsAwaitingApproval.length === 0 ? (
-            <p className="text-gray-500">No products awaiting approval.</p>
+            <p className="text-inkMuted">No products awaiting approval.</p>
           ) : (
             <div className="space-y-3">
               {productsAwaitingApproval.map((p) => (
                 <div key={p.id} className="flex items-center justify-between rounded-lg border p-3">
                   <div>
                     <p className="font-semibold text-primary">{p.nameKannada || p.name}</p>
-                    <p className="text-xs text-gray-500">{p.category} · ₹{p.price}</p>
+                    <p className="text-xs text-inkMuted">{p.category} · ₹{p.price}</p>
                   </div>
                   <div className="flex gap-2">
                     <button

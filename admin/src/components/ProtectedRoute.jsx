@@ -6,7 +6,7 @@ export default function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gray-50">
+      <div className="flex h-screen items-center justify-center bg-surfaceMuted">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primaryLight border-t-primary" />
       </div>
     );
@@ -16,10 +16,10 @@ export default function ProtectedRoute({ children }) {
   }
   if (!isAdmin) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-gray-50 px-6 text-center">
+      <div className="flex h-screen flex-col items-center justify-center gap-4 bg-surfaceMuted px-6 text-center">
         <span className="text-4xl">🛡️</span>
         <h1 className="text-xl font-bold text-primary">Access restricted</h1>
-        <p className="max-w-sm text-sm text-gray-500">
+        <p className="max-w-sm text-sm text-inkMuted">
           {user.email} isn't set up as an ULUME admin. If you believe this is a mistake, contact the team to get
           an admin account provisioned.
         </p>

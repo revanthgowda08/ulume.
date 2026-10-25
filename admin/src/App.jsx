@@ -15,10 +15,10 @@ function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-surfaceMuted">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-gray-200 bg-white px-4 py-3 lg:hidden">
+        <header className="flex items-center gap-3 border-b border-line bg-white px-4 py-3 lg:hidden">
           <button onClick={() => setSidebarOpen(true)} className="text-2xl text-primary" aria-label="Open menu">
             ☰
           </button>

@@ -60,14 +60,14 @@ export default function Farmers() {
       {error && <p className="mb-4 text-sm text-errorRed">{error}</p>}
 
       {searched && !searching && !farmer && !error && (
-        <p className="text-gray-500">No farmer found with this phone number.</p>
+        <p className="text-inkMuted">No farmer found with this phone number.</p>
       )}
 
       {farmer && (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          <div className="rounded-xl bg-white p-5 shadow-sm lg:col-span-1">
+          <div className="rounded-xl bg-white p-5 shadow-card lg:col-span-1">
             <h3 className="font-bold text-primary">{farmer.name || "Unnamed farmer"}</h3>
-            <div className="mt-3 space-y-1 text-sm text-gray-600">
+            <div className="mt-3 space-y-1 text-sm text-inkMuted">
               <p>📞 {farmer.phone}</p>
               <p>📍 {farmer.village}, {farmer.taluk}, {farmer.district}</p>
               <p>🌾 Crops: {farmer.crops?.join(", ") || "—"}</p>
@@ -77,13 +77,13 @@ export default function Farmers() {
               <p className="text-xs text-primaryMid">Wallet Balance</p>
               <p className="text-2xl font-bold text-primary">₹{farmer.walletBalance || 0}</p>
             </div>
-            <p className="mt-3 text-sm text-gray-600">Total orders: {farmer.totalOrders || 0}</p>
+            <p className="mt-3 text-sm text-inkMuted">Total orders: {farmer.totalOrders || 0}</p>
           </div>
 
-          <div className="rounded-xl bg-white p-5 shadow-sm lg:col-span-2">
+          <div className="rounded-xl bg-white p-5 shadow-card lg:col-span-2">
             <h3 className="mb-3 font-bold text-primary">Order History</h3>
             <table className="w-full text-left text-sm">
-              <thead className="text-gray-500">
+              <thead className="text-inkMuted">
                 <tr>
                   <th className="pb-2">Order ID</th>
                   <th className="pb-2">Total</th>
@@ -99,7 +99,7 @@ export default function Farmers() {
                   </tr>
                 ))}
                 {orders.length === 0 && (
-                  <tr><td colSpan={3} className="py-3 text-gray-500">No orders yet.</td></tr>
+                  <tr><td colSpan={3} className="py-3 text-inkMuted">No orders yet.</td></tr>
                 )}
               </tbody>
             </table>
